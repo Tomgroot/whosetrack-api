@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('competition_users', function (Blueprint $table) {
             $table->id();
-            $table->string('nickname');
-            $table->string('spotify_guid');
-            $table->string('ip_address', 45)->nullable();
+            $table->foreignId('user_id')->index();
+            $table->foreignId('competition_id')->index();
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('competition_users');
     }
 };
