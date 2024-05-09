@@ -76,4 +76,16 @@ class CompetitionController extends Controller {
             $length
         );
     }
+
+    public function getRelation($competition_id, $relation) {
+        if (!in_array($relation, ['users', 'rounds'])) {
+            return response()->json(['message' => 'Invalid data type requested'], 400);
+        }
+
+        if (is_null($competition = Competition::find($competition_id))) {
+            return response()->json(['message' => 'Competition not found'], 404);
+        }
+
+        return response()->json($competition->{$relation});
+    }
 }

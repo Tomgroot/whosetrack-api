@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('songs', function (Blueprint $table) {
+        Schema::create('tracks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->index();
             $table->foreignId('round_id')->index();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('songs');
+        Schema::dropIfExists('tracks');
     }
 };

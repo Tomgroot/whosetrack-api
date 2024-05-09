@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Guess;
-use App\Models\Round;
 use App\Models\Track;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class GuessController extends Controller {
+class TrackController extends Controller {
 
     public function __construct() {
-        self::$entity = Guess::class;
+        self::$entity = Track::class;
     }
 
     public function store(Request $request): JsonResponse {
@@ -22,7 +20,7 @@ class GuessController extends Controller {
             'round_id' => $round_id,
             'user_id' => $request->get('user_id'),
             'spotify_url' => $request->get('spotify_url'),
-        ], Round::$rules);
+        ], Track::$rules);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);

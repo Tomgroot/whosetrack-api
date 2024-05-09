@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('guesses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->index();
-            $table->foreignId('song_id')->index();
+            $table->foreignId('track_id')->index();
             $table->foreignId('guessed_user_id')->nullable()->index();
             $table->timestamps();
-            $table->unique(['user_id', 'song_id']);
+            $table->unique(['user_id', 'track_id']);
         });
     }
 

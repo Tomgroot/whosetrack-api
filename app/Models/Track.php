@@ -5,8 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Song extends Model {
+class Track extends Model {
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'round_id',
+        'spotify_url',
+    ];
 
     public static $rules = [
         'user_id' => 'required|integer|exists:users,id',
@@ -20,6 +26,10 @@ class Song extends Model {
 
     public function round() {
         return $this->belongsTo(Round::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
     }
 
     public function guesses() {

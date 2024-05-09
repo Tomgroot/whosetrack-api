@@ -31,6 +31,6 @@ class Competition extends Model {
     }
 
     public function rounds() {
-        return $this->hasMany(Round::class);
+        return $this->hasMany(Round::class)->orderBy('created_at', 'desc');
     }
 }

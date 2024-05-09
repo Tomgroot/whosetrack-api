@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Round;
 
 return new class extends Migration
 {
@@ -14,6 +15,11 @@ return new class extends Migration
         Schema::create('rounds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('competition_id')->index();
+            $table->enum('status', [
+                Round::STATUS_PICK_TRACK,
+                Round::STATUS_GUESS_WHOSE,
+                Round::STATUS_FINISHED
+            ]);
             $table->timestamps();
         });
     }

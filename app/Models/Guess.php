@@ -10,7 +10,7 @@ class Guess extends Model {
 
     public static $rules = [
         'user_id' => 'required|integer|exists:users,id',
-        'song_id' => 'required|integer|exists:songs,id',
+        'track_id' => 'required|integer|exists:tracks,id',
         'guessed_user_id' => 'nullable|integer|exists:users,id',
     ];
 
@@ -18,8 +18,8 @@ class Guess extends Model {
         return self::$rules;
     }
 
-    public function song() {
-        return $this->belongsTo(Song::class);
+    public function track() {
+        return $this->belongsTo(Track::class);
     }
 
     public function user() {
