@@ -28,7 +28,18 @@ class User extends Authenticatable
      */
     protected $hidden = [];
 
+    public static $rules = [
+        'nickname' => 'required|string',
+        'spotify_guid' => 'string|unique:users,spotify_guid'
+    ];
+
+    public static function rules($id) {
+        $rules = self::$rules;
+        $rules['spotify_guid'] .= ',' . $id;
+        return $rules;
+    }
+
     public function competitions() {
-        return $this->belongsToMany(Competition::class, 'competition_users');
+        return $this->belongsToMany(Competition::class)->orderBy('created_at', 'desc');
     }
 }

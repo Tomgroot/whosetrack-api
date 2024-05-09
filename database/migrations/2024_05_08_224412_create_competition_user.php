@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('competition_users', function (Blueprint $table) {
-            $table->id();
+        Schema::create('competition_user', function (Blueprint $table) {
             $table->foreignId('user_id')->index();
             $table->foreignId('competition_id')->index();
             $table->timestamps();
+            $table->unique(['user_id', 'competition_id']);
         });
     }
 
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('competition_users');
+        Schema::dropIfExists('competition_user');
     }
 };

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('song_id')->index();
             $table->foreignId('guessed_user_id')->nullable()->index();
             $table->timestamps();
+            $table->unique(['user_id', 'song_id']);
         });
     }
 

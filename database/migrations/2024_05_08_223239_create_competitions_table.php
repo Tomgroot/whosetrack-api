@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('competitions', function (Blueprint $table) {
             $table->id();
             $table->string('join_code');
+            $table->boolean('joinable');
+            $table->foreignId('created_by')->index();
             $table->timestamps();
         });
     }

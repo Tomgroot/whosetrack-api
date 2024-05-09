@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('round_id')->index();
             $table->string('spotify_url');
             $table->timestamps();
+            $table->unique(['user_id', 'round_id']);
         });
     }
 
