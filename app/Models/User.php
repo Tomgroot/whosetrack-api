@@ -19,6 +19,7 @@ class User extends Authenticatable
     protected $fillable = [
         'nickname',
         'spotify_guid',
+        'image_url',
     ];
 
     /**
@@ -30,7 +31,8 @@ class User extends Authenticatable
 
     public static $rules = [
         'nickname' => 'required|string',
-        'spotify_guid' => 'string|unique:users,spotify_guid'
+        'spotify_guid' => 'string|unique:users,spotify_guid',
+        'image_url' => 'string',
     ];
 
     public static function rules($id) {

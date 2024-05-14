@@ -12,16 +12,32 @@ class Track extends Model {
         'user_id',
         'round_id',
         'spotify_url',
+        'ready',
     ];
 
     public static $rules = [
         'user_id' => 'required|integer|exists:users,id',
         'round_id' => 'required|integer|exists:rounds,id',
         'spotify_url' => 'required|url|starts_with:https://open.spotify.com/',
+        'ready' => 'boolean',
+    ];
+
+    protected $with = [
+        'guesses',
+    ];
+
+    protected $appends = [
+        'missing_guess_users',
     ];
 
     public static function rules($id) {
         return self::$rules;
+    }
+
+    public function getMissingGuessUsersAttribute() {
+        $guessUserIds = $this->guesses->pluck('user_id')->unique();
+
+        return $this->round()->first()->users->whereNotIn('id', $guessUserIds);
     }
 
     public function round() {

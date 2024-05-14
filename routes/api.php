@@ -21,4 +21,5 @@ Route::prefix('v1')->group(function () {
 
     Route::get('rounds/{round_id}/{relation}', [RoundController::class, 'getRelation']);
     Route::post('rounds/{round_id}/tracks', [TrackController::class, 'store']);
+    Route::post('tracks/{track_id}/guesses', [GuessController::class, 'store']);
 });

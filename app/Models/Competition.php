@@ -18,6 +18,10 @@ class Competition extends Model {
         'created_by',
     ];
 
+    protected $with = [
+        'rounds',
+    ];
+
     public static function rules($id) {
         return [];
     }

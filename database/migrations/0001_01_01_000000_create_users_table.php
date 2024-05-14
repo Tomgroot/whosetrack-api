@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('nickname');
+            $table->string('image_url')->nullable();
             $table->string('spotify_guid')->nullable();
             $table->timestamps();
         });

@@ -22,7 +22,7 @@ class Round extends Model {
     ];
 
     protected $appends = [
-        'missing_users',
+        'missing_track_users',
     ];
 
     public static function rules($id) {
@@ -34,30 +34,26 @@ class Round extends Model {
     }
 
     public function tracks() {
-        return $this->hasMany(Track::class);
+        return $this->hasMany(Track::class)->orderBy('spotify_url');
     }
 
     public function users() {
         return $this->competition->users()->wherePivot('created_at', '<', $this->created_at);
     }
 
-    public function getMissingUsersAttribute() {
-        $trackUserIds = $this->tracks->pluck(
-            $this->status === self::STATUS_PICK_TRACK ? 'user_id' : 'guesses.user_id'
-        )->unique();
+    public function getMissingTrackUsersAttribute() {
+        $trackUserIds = $this->tracks->pluck('user_id')->unique();
 
         return $this->users->whereNotIn('id', $trackUserIds);
     }
 
     public function updateStatus() {
-        if ($this->status === self::STATUS_FINISHED
-            || $this->getMissingUsersAttribute()->count() != 0) {
+        if ($this->status !== self::STATUS_PICK_TRACK
+            || $this->getMissingTrackUsersAttribute()->count() == 0) {
             return;
         }
 
-        $this->status = $this->status === self::STATUS_PICK_TRACK
-            ? self::STATUS_GUESS_WHOSE : self::STATUS_FINISHED;
-
+        $this->status = self::STATUS_GUESS_WHOSE;
         $this->save();
     }
 }

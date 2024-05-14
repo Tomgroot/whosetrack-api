@@ -11,7 +11,13 @@ class Guess extends Model {
     public static $rules = [
         'user_id' => 'required|integer|exists:users,id',
         'track_id' => 'required|integer|exists:tracks,id',
-        'guessed_user_id' => 'nullable|integer|exists:users,id',
+        'guessed_user_id' => 'required|integer|exists:users,id',
+    ];
+
+    protected $fillable = [
+        'user_id',
+        'track_id',
+        'guessed_user_id',
     ];
 
     public static function rules($id) {

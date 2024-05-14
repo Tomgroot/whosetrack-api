@@ -16,26 +16,24 @@ class GuessController extends Controller {
     }
 
     public function store(Request $request): JsonResponse {
-        $round_id = $request->route('round_id') ?? $request->get('round_id');
+        $track_id = $request->route('track_id') ?? $request->get('track_id');
 
         $validator = Validator::make([
-            'round_id' => $round_id,
+            'track_id' => $track_id,
             'user_id' => $request->get('user_id'),
-            'spotify_url' => $request->get('spotify_url'),
-        ], Round::$rules);
+            'guessed_user_id' => $request->get('guessed_user_id'),
+        ], Guess::$rules);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $track = Track::create([
-            'round_id' => $round_id,
+        $guess = Guess::create([
+            'track_id' => $track_id,
             'user_id' => $request->get('user_id'),
-            'spotify_url' => $request->get('spotify_url'),
+            'guessed_user_id' => $request->get('guessed_user_id'),
         ]);
 
-        $track->round->updateStatus();
-
-        return response()->json($track, 201);
+        return response()->json($guess, 201);
     }
 }
