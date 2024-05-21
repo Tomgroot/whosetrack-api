@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Competition;
+use App\Models\Round;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,12 @@ class CompetitionController extends Controller {
         ]);
 
         $competition->users()->attach($user);
+
+        // At creation of a competition, users do not have to call.
+        Round::create([
+            'competition_id' => $competition->id,
+            'status' => 'pick_track',
+        ]);
 
         return response()->json($competition, 201);
     }

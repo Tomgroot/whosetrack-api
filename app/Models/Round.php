@@ -21,10 +21,6 @@ class Round extends Model {
         'competition_id' => 'required|integer|exists:competitions,id',
     ];
 
-    protected $appends = [
-        'missing_track_users',
-    ];
-
     public static function rules($id) {
         return self::$rules;
     }
@@ -38,18 +34,17 @@ class Round extends Model {
     }
 
     public function users() {
-        return $this->competition->users()->wherePivot('created_at', '<', $this->created_at);
-    }
+        if ($this->status === self::STATUS_PICK_TRACK) {
+            return $this->competition->users();
+        }
 
-    public function getMissingTrackUsersAttribute() {
         $trackUserIds = $this->tracks->pluck('user_id')->unique();
-
-        return $this->users->whereNotIn('id', $trackUserIds);
+        return $this->users->whereIn('id', $trackUserIds);
     }
 
     public function updateStatus() {
-        if ($this->status !== self::STATUS_PICK_TRACK
-            || $this->getMissingTrackUsersAttribute()->count() == 0) {
+        // Users should not start guessing when they are alone in the competition.
+        if ($this->tracks->count() <= 1 || $this->tracks->pluck('ready')->contains(false)) {
             return;
         }
 

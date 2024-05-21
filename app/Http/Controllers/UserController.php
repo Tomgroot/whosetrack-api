@@ -3,11 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller {
 
     public function __construct() {
         self::$entity = User::class;
+    }
+
+    public function index(): JsonResponse {
+        if (is_null($spotify_guid = request()->query('spotify_guid'))) {
+            return parent::index();
+        }
+
+        return response()->json(User::where('spotify_guid', $spotify_guid)->first());
     }
 
     public function getCompetitions($user_id) {

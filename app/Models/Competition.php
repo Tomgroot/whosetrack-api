@@ -19,7 +19,11 @@ class Competition extends Model {
     ];
 
     protected $with = [
-        'rounds',
+        'users',
+    ];
+
+    protected $appends = [
+        'most_recent_round',
     ];
 
     public static function rules($id) {
@@ -36,5 +40,9 @@ class Competition extends Model {
 
     public function rounds() {
         return $this->hasMany(Round::class)->orderBy('created_at', 'desc');
+    }
+
+    public function getMostRecentRoundAttribute() {
+        return $this->rounds()->with(['tracks', 'tracks.user'])->first();
     }
 }

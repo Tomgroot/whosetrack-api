@@ -18,7 +18,7 @@ class Track extends Model {
     public static $rules = [
         'user_id' => 'required|integer|exists:users,id',
         'round_id' => 'required|integer|exists:rounds,id',
-        'spotify_url' => 'required|url|starts_with:https://open.spotify.com/',
+        'spotify_url' => 'url|starts_with:https://open.spotify.com/',
         'ready' => 'boolean',
     ];
 
@@ -26,12 +26,11 @@ class Track extends Model {
         'guesses',
     ];
 
-    protected $appends = [
-        'missing_guess_users',
-    ];
-
     public static function rules($id) {
-        return self::$rules;
+        $rules = self::$rules;
+        $rules['user_id'] = str_replace('required|', '', $rules['user_id']);
+        $rules['round_id'] = str_replace('required|', '', $rules['round_id']);
+        return $rules;
     }
 
     public function getMissingGuessUsersAttribute() {
