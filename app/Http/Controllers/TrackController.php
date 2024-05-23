@@ -26,11 +26,17 @@ class TrackController extends Controller {
             return response()->json($validator->errors(), 422);
         }
 
-        $track = Track::create([
+        $data = [
             'round_id' => $round_id,
             'user_id' => $request->get('user_id'),
             'spotify_url' => $request->get('spotify_url'),
-        ]);
+        ];
+
+        if (!is_null($ready = $request->get('ready'))) {
+            $data['ready'] = $ready;
+        }
+
+        $track = Track::create($data);
 
         $track->round->updateStatus();
 

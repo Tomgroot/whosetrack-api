@@ -22,10 +22,6 @@ class Track extends Model {
         'ready' => 'boolean',
     ];
 
-    protected $with = [
-        'guesses',
-    ];
-
     public static function rules($id) {
         $rules = self::$rules;
         $rules['user_id'] = str_replace('required|', '', $rules['user_id']);

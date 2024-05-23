@@ -21,6 +21,15 @@ class Round extends Model {
         'competition_id' => 'required|integer|exists:competitions,id',
     ];
 
+    public $with = [
+        'users',
+        'tracks',
+    ];
+
+    public $appends = [
+        'creator',
+    ];
+
     public static function rules($id) {
         return self::$rules;
     }
@@ -35,16 +44,20 @@ class Round extends Model {
 
     public function users() {
         if ($this->status === self::STATUS_PICK_TRACK) {
-            return $this->competition->users();
+            return $this->competition()->first()->users();
         }
 
-        $trackUserIds = $this->tracks->pluck('user_id')->unique();
-        return $this->users->whereIn('id', $trackUserIds);
+        $trackUserIds = $this->tracks()->pluck('user_id')->unique();
+        return $this->competition()->first()->users()->whereIn('id', $trackUserIds);
+    }
+
+    public function getCreatorAttribute() {
+        return $this->competition()->first()->creator()->first();
     }
 
     public function updateStatus() {
         // Users should not start guessing when they are alone in the competition.
-        if ($this->tracks->count() <= 1 || $this->tracks->pluck('ready')->contains(false)) {
+        if ($this->tracks->count() <= 1 || $this->tracks->pluck('ready')->contains(0)) {
             return;
         }
 

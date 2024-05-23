@@ -20,6 +20,7 @@ class Competition extends Model {
 
     protected $with = [
         'users',
+        'creator',
     ];
 
     protected $appends = [

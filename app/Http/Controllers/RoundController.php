@@ -41,6 +41,12 @@ class RoundController extends Controller {
             return response()->json(['message' => 'Relation not found'], 404);
         }
 
+        if ($relation === 'tracks') {
+            $round->load(['tracks' => function ($query) {
+                $query->with('guesses');
+            }]);
+        }
+
         return response()->json($round->{$relation});
     }
 }
