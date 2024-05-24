@@ -19,7 +19,9 @@ Route::prefix('v1')->group(function () {
     Route::get('competitions/{competition_id}/{relation}', [CompetitionController::class, 'getRelation']);
     Route::post('competitions/{competition_id}/rounds', [RoundController::class, 'store']);
 
+    Route::get('rounds/{round_id}/results', [RoundController::class, 'getResults']);
     Route::get('rounds/{round_id}/{relation}', [RoundController::class, 'getRelation']);
     Route::post('rounds/{round_id}/tracks', [TrackController::class, 'store']);
     Route::post('tracks/{track_id}/guesses', [GuessController::class, 'store']);
+    Route::put('rounds/{round_id}/tracks', [TrackController::class, 'updateByRound']);
 });

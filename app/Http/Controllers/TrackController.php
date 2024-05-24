@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Track;
+use App\Models\Round;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -41,5 +42,28 @@ class TrackController extends Controller {
         $track->round->updateStatus();
 
         return response()->json($track, 201);
+    }
+
+    public function update(Request $request, $id): JsonResponse {
+        $track = Track::findOrFail($id);
+        $rules = Track::rules($id);
+        $validated = $request->validate($rules);
+
+        $track->update($validated);
+        $track->round->updateStatus();
+        
+        return response()->json($track);
+    }
+
+    public function updateByRound(Request $request): JsonResponse {
+        $round = Round::findOrFail($request->route('round_id'));
+        $track = $round->tracks()->where('user_id', $request->user_id)->first();
+
+        // TODO: make sure validation rules accept empty spotify url and add validation here
+        $track->update(["ready" => $request->ready]);
+
+        $track->round->updateStatus();
+
+        return response()->json($track);
     }
 }
