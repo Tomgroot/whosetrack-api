@@ -36,7 +36,7 @@ class Competition extends Model {
     }
 
     public function users() {
-        return $this->belongsToMany(User::class, 'competition_user', 'competition_id', 'user_id');
+        return $this->belongsToMany(User::class);
     }
 
     public function rounds() {
@@ -48,6 +48,6 @@ class Competition extends Model {
     }
 
     public function mostRecentRound() {
-        return $this->rounds()->first()->get();
+        return $this->rounds()->first();
     }
 }

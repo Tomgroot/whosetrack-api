@@ -35,7 +35,7 @@ class Round extends Model {
     }
 
     public function competition() {
-        return $this->belongsTo(Competition::class, 'competition_id', 'id');
+        return $this->belongsTo(Competition::class);
     }
 
     public function tracks() {
@@ -71,5 +71,38 @@ class Round extends Model {
         }
 
         $this->save();
+    }
+
+    public function results() {
+        $debug = [];
+        $users = $this->users->sortBy('id');
+
+        foreach($users as &$user){
+            $user->score = 0;
+        }
+
+        foreach($this->tracks as $track){
+
+            foreach($track->guesses->sortBy('user_id')->values() as $key => $guess){
+                $extra = (int)($guess->guessed_user_id == $track->user_id || $users[$key]->user_id == $track->user_id);
+                $users[$key]->score += $extra;
+            }
+        }
+
+        // Not super happy with this, but otherwise a foreach counter is needed because keys are messed up
+        $users = array_values($users->sortBy('score', SORT_REGULAR, true)->values()->all());
+
+        $previous_score = count($users) + 1;
+
+        foreach($users as $key => &$user){
+            if($user->score < $previous_score){
+                $user->position = $key + 1;
+                $previous_score = $user->score;
+            } else {
+                $user->position = $users[$key - 1]->position;
+            }
+        }
+
+        return $users;
     }
 }

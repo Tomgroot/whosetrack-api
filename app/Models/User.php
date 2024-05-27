@@ -44,4 +44,8 @@ class User extends Authenticatable
     public function competitions() {
         return $this->belongsToMany(Competition::class)->orderBy('created_at', 'desc');
     }
+
+    public function rounds() {
+        return $this->belongsToMany(Round::class)->orderBy('created_at', 'desc');
+    }
 }

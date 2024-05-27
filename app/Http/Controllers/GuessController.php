@@ -28,11 +28,19 @@ class GuessController extends Controller {
             return response()->json($validator->errors(), 422);
         }
 
-        $guess = Guess::create([
-            'track_id' => $track_id,
-            'user_id' => $request->get('user_id'),
-            'guessed_user_id' => $request->get('guessed_user_id'),
-        ]);
+        $guess = Guess::where('track_id', $track_id)->where('user_id', $request->get('user_id'))->first();
+
+        if($guess === null){
+            $guess = Guess::create([
+                'track_id' => $track_id,
+                'user_id' => $request->get('user_id'),
+                'guessed_user_id' => $request->get('guessed_user_id'),
+            ]);
+        } else {
+            $guess->guessed_user_id = $request->get('guessed_user_id');
+            $guess->save();
+        }
+
 
         return response()->json($guess, 201);
     }
