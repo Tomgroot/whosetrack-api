@@ -44,6 +44,10 @@ class Competition extends Model {
     }
 
     public function getMostRecentRoundAttribute() {
-        return $this->rounds()->with(['tracks', 'tracks.user'])->first();
+        return $this->mostRecentRound();
+    }
+
+    public function mostRecentRound() {
+        return $this->rounds()->first()->get();
     }
 }

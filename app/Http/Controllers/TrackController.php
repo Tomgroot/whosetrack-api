@@ -14,6 +14,17 @@ class TrackController extends Controller {
         self::$entity = Track::class;
     }
 
+    public function update(Request $request, $id): JsonResponse {
+        $track = Track::findOrFail($id);
+        $rules = Track::rules($id);
+        $validated = $request->validate($rules);
+
+        $track->update($validated);
+        $track->round->updateStatus();
+
+        return response()->json($track);
+    }
+
     public function store(Request $request): JsonResponse {
         $round_id = $request->route('round_id') ?? $request->get('round_id');
 

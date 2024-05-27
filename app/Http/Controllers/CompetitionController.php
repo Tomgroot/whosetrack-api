@@ -15,6 +15,13 @@ class CompetitionController extends Controller {
         self::$entity = Competition::class;
     }
 
+    public function addUserToCompetitionAndRound($competition, $user) {
+        $competition->users()->attach($user);
+
+        $round = $competition->mostRecentRound();
+        $round->users()->attach($user);
+    }
+
     public function store(Request $request): JsonResponse {
         $validated = $request->validate(Competition::$rules);
 
@@ -28,13 +35,13 @@ class CompetitionController extends Controller {
             'created_by' => $validated['user_id'],
         ]);
 
-        $competition->users()->attach($user);
-
         // At creation of a competition, users do not have to call.
         Round::create([
             'competition_id' => $competition->id,
             'status' => 'pick_track',
         ]);
+
+        $this->addUserToCompetitionAndRound($competition, $user);
 
         return response()->json($competition, 201);
     }
@@ -68,7 +75,7 @@ class CompetitionController extends Controller {
             return response()->json(['error' => 'User already in competition'], 401);
         }
 
-        $competition->users()->attach($user);
+        $this->addUserToCompetitionAndRound($competition, $user);
 
         return response()->json([
             'success' => true
