@@ -35,7 +35,7 @@ class Round extends Model {
     }
 
     public function competition() {
-        return $this->belongsTo(Competition::class);
+        return $this->belongsTo(Competition::class, 'competition_id', 'id');
     }
 
     public function tracks() {
@@ -43,12 +43,12 @@ class Round extends Model {
     }
 
     public function users() {
-        if ($this->status === self::STATUS_PICK_TRACK) {
+        if ($this->status == self::STATUS_PICK_TRACK) {
             return $this->competition()->first()->users();
         }
 
         $trackUserIds = $this->tracks()->pluck('user_id')->unique();
-        return $this->competition()->first()->users()->whereIn('id', $trackUserIds);
+        return $this->competition()->first()->users();
 
     }
 
@@ -64,7 +64,6 @@ class Round extends Model {
 
             foreach($track->guesses->sortBy('user_id')->values() as $key => $guess){
                 $extra = (int)($guess->guessed_user_id == $track->user_id || $users[$key]->user_id == $track->user_id);
-                // $debug[] = 'key:'.$key." : ".$users[$key]->nickname." guessed ".$guess->guessed_user_id." and it is ".$track->user_id;
                 $users[$key]->score += $extra;
             }
         }
