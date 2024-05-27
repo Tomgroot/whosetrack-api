@@ -23,9 +23,9 @@ class Competition extends Model {
         'creator',
     ];
 
-    // protected $appends = [
-    //     'most_recent_round',
-    // ];
+    protected $appends = [
+        'most_recent_round',
+    ];
 
     public static function rules($id) {
         return [];
