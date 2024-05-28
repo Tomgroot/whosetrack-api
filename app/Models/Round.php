@@ -14,11 +14,13 @@ class Round extends Model {
 
     protected $fillable = [
         'competition_id',
+        'current_track',
         'status',
     ];
 
     public static $rules = [
         'competition_id' => 'required|integer|exists:competitions,id',
+        'current_track' => 'required|integer',
     ];
 
     public $with = [

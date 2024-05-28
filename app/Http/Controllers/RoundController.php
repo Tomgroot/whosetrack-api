@@ -13,6 +13,14 @@ class RoundController extends Controller {
         self::$entity = Round::class;
     }
 
+    public function updateCurrentTrack($round_id, Request $request): JsonResponse {
+        $round = Round::findOrFail($round_id);
+
+        $round->update(["current_track" => $request->current_track]);
+
+        return response()->json($round);
+    }
+
     public function store(Request $request): JsonResponse {
         $competition_id = $request->route('competition_id') ?? $request->get('competition_id');
 
@@ -26,6 +34,7 @@ class RoundController extends Controller {
 
         $entity = Round::create([
             'competition_id' => $competition_id,
+            'current_track' => 0,
             'status' => 'pick_track',
         ]);
 
