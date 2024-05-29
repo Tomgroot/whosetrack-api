@@ -20,6 +20,10 @@ class Guess extends Model {
         'guessed_user_id',
     ];
 
+    public $appends = [
+        'nickname',
+    ];
+
     public static function rules($id) {
         return self::$rules;
     }
@@ -34,5 +38,9 @@ class Guess extends Model {
 
     public function guessedUser() {
         return $this->belongsTo(User::class, 'guessed_user_id');
+    }
+
+    public function getNicknameAttribute() {
+        return $this->guessedUser()->first()->nickname;
     }
 }

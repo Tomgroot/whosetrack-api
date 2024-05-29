@@ -38,6 +38,7 @@ class CompetitionController extends Controller {
         // At creation of a competition, users do not have to call.
         Round::create([
             'competition_id' => $competition->id,
+            'current_track' => 0,
             'status' => 'pick_track',
         ]);
 

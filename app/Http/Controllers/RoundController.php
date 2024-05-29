@@ -13,6 +13,14 @@ class RoundController extends Controller {
         self::$entity = Round::class;
     }
 
+    public function updateCurrentTrack($round_id, Request $request): JsonResponse {
+        $round = Round::findOrFail($round_id);
+
+        $round->update(["current_track" => $request->current_track]);
+
+        return response()->json($round);
+    }
+
     public function store(Request $request): JsonResponse {
         $competition_id = $request->route('competition_id') ?? $request->get('competition_id');
 
@@ -26,14 +34,20 @@ class RoundController extends Controller {
 
         $entity = Round::create([
             'competition_id' => $competition_id,
+            'current_track' => 0,
             'status' => 'pick_track',
         ]);
 
         return response()->json($entity, 201);
     }
 
+    public function getResults($round_id): JsonResponse {
+        $round = Round::findOrFail($round_id);
+        return response()->json($round->results());
+    }
+
     public function getRelation($round_id, $relation) {
-        if (!in_array($relation, ['users', 'tracks'])) {
+        if (!in_array($relation, ['users', 'tracks', 'competition'])) {
             return response()->json(['message' => 'Invalid data type requested'], 400);
         }
 
@@ -43,7 +57,7 @@ class RoundController extends Controller {
 
         if ($relation === 'tracks') {
             $round->load(['tracks' => function ($query) {
-                $query->with('guesses');
+                $query->with(['guesses']);
             }]);
         }
 

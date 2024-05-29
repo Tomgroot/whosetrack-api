@@ -29,6 +29,10 @@ class Track extends Model {
         return $rules;
     }
 
+    public $appends = [
+        'nickname',
+    ];
+
     public function getMissingGuessUsersAttribute() {
         $guessUserIds = $this->guesses->pluck('user_id')->unique();
 
@@ -45,5 +49,9 @@ class Track extends Model {
 
     public function guesses() {
         return $this->hasMany(Guess::class);
+    }
+
+    public function getNicknameAttribute() {
+        return $this->user()->first()->nickname;
     }
 }

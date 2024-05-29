@@ -48,6 +48,6 @@ class Competition extends Model {
     }
 
     public function mostRecentRound() {
-        return $this->rounds()->first()->get();
+        return $this->rounds()->first();
     }
 }
