@@ -60,12 +60,6 @@ class Round extends Model {
             return;
         }
 
-        // TODO: there must be a better way to do this...
-        foreach($this->tracks as $track){
-            $track->ready = 0;
-            $track->save();
-        };
-
         if ($this->status == self::STATUS_PICK_TRACK){
             $this->status = self::STATUS_GUESS_WHOSE;
         } elseif ($this->status == self::STATUS_GUESS_WHOSE){
@@ -76,35 +70,33 @@ class Round extends Model {
     }
 
     public function results() {
-        $debug = [];
         $users = $this->users->sortBy('id');
+        $scores = [];
 
-        foreach($users as &$user){
-            $user->score = 0;
+        foreach($users as $user){
+            $scores[$user->id] = [
+                'position' => 0,
+                'score' => 0,
+            ];
         }
 
         foreach($this->tracks as $track){
-
-            foreach($track->guesses->sortBy('user_id')->values() as $key => $guess){
-                $extra = (int)($guess->guessed_user_id == $track->user_id || $users[$key]->user_id == $track->user_id);
-                $users[$key]->score += $extra;
+            foreach($track->guesses->sortBy('user_id')->values() as $guesser_id => $guess){
+                $extra = (int)($guess->guessed_user_id === $track->user_id || $guesser_id === $track->user_id);
+                $scores[$guesser_id]['score'] += $extra;
             }
         }
 
-        // Not super happy with this, but otherwise a foreach counter is needed because keys are messed up
-        $users = array_values($users->sortBy('score', SORT_REGULAR, true)->values()->all());
+        // Sort the array based on the scores, but keep the user ids as keys.
+        uasort($scores, function($a, $b) {
+            return $b['score'] <=> $a['score'];
+        });
 
-        $previous_score = count($users) + 1;
-
-        foreach($users as $key => &$user){
-            if($user->score < $previous_score){
-                $user->position = $key + 1;
-                $previous_score = $user->score;
-            } else {
-                $user->position = $users[$key - 1]->position;
-            }
+        $position = 1;
+        foreach ($scores as &$score) {
+            $score['position'] = $position++;
         }
 
-        return $users;
+        return $scores;
     }
 }

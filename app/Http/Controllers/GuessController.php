@@ -15,7 +15,7 @@ class GuessController extends Controller {
         self::$entity = Guess::class;
     }
 
-    public function updateGuess(Request $request): JsonResponse {
+    public function updateByTrack(Request $request): JsonResponse {
         $track_id = $request->route('track_id') ?? $request->get('track_id');
 
         $validator = Validator::make([
@@ -34,7 +34,7 @@ class GuessController extends Controller {
             $guess->guessed_user_id = $request->get('guessed_user_id');
             $guess->save();
         }
-        
+
         return response()->json($guess, 201);
     }
 
