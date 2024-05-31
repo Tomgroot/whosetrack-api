@@ -79,6 +79,8 @@ class CompetitionController extends Controller {
         $this->addUserToCompetitionAndRound($competition, $user);
 
         return response()->json([
+            'competition_id' => $competition->id,
+            'most_recent_round' => $competition->most_recent_round,
             'success' => true
         ], 201);
     }

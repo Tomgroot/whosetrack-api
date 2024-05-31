@@ -14,13 +14,13 @@ class Round extends Model {
 
     protected $fillable = [
         'competition_id',
-        'current_track',
+        'currently_playing_track',
         'status',
     ];
 
     public static $rules = [
         'competition_id' => 'required|integer|exists:competitions,id',
-        'current_track' => 'required|integer',
+        'currently_playing_track' => 'integer',
     ];
 
     public $with = [
@@ -33,7 +33,9 @@ class Round extends Model {
     ];
 
     public static function rules($id) {
-        return self::$rules;
+        return [
+            'currently_playing_track' => 'integer',
+        ];
     }
 
     public function competition() {

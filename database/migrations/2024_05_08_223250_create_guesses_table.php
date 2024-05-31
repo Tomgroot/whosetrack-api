@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->index();
             $table->foreignId('track_id')->index();
             $table->foreignId('guessed_user_id')->nullable()->index();
+            $table->boolean('ready');
             $table->timestamps();
             $table->unique(['user_id', 'track_id']);
         });

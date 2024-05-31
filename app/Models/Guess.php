@@ -12,12 +12,14 @@ class Guess extends Model {
         'user_id' => 'required|integer|exists:users,id',
         'track_id' => 'required|integer|exists:tracks,id',
         'guessed_user_id' => 'required|integer|exists:users,id',
+        'ready' => 'boolean',
     ];
 
     protected $fillable = [
         'user_id',
         'track_id',
         'guessed_user_id',
+        'ready',
     ];
 
     public $appends = [
