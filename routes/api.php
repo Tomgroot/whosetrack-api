@@ -25,4 +25,5 @@ Route::prefix('v1')->group(function () {
     Route::post('tracks/{track_id}/guesses', [GuessController::class, 'store']);
     Route::put('tracks/{track_id}/guesses', [GuessController::class, 'updateByTrack']);
     Route::put('rounds/{round_id}/tracks', [TrackController::class, 'updateByRound']);
+    Route::post('rounds/{round_id}/submit_guesses', [RoundController::class, 'submitGuesses']);
 });

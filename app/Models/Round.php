@@ -65,6 +65,12 @@ class Round extends Model {
         if ($this->status == self::STATUS_PICK_TRACK){
             $this->status = self::STATUS_GUESS_WHOSE;
         } elseif ($this->status == self::STATUS_GUESS_WHOSE){
+            $nr_users = $this->users->count();
+            foreach($this->tracks as $track){
+                if($track->guesses()->count() < $nr_users || $track->guesses()->pluck('ready')->contains(0)){
+                    return;
+                }
+            }
             $this->status = self::STATUS_FINISHED;
         }
 
@@ -83,7 +89,8 @@ class Round extends Model {
         }
 
         foreach($this->tracks as $track){
-            foreach($track->guesses->sortBy('user_id')->values() as $guesser_id => $guess){
+            foreach($track->guesses->sortBy('user_id')->values() as $guess){
+                $guesser_id = $guess->user_id;
                 $extra = (int)($guess->guessed_user_id === $track->user_id || $guesser_id === $track->user_id);
                 $scores[$guesser_id]['score'] += $extra;
             }

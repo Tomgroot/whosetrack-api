@@ -37,6 +37,25 @@ class RoundController extends Controller {
         return response()->json($round->results());
     }
 
+    public function submitGuesses(Request $request): JsonResponse{
+        $round = Round::findOrFail($request->route('round_id'));
+
+        // This can be done more efficiently with a join
+
+        foreach($round->tracks as $track){
+            $guess = $track->guesses->where('user_id', $request->user_id)->first();
+            $guess->ready = true;
+            $guess->save();
+        }
+
+        $round->status = 'guess_whose';
+
+        $round->updateStatus();
+        
+        return response()->json($round);
+
+    }
+
     public function getRelation($round_id, $relation) {
         if (!in_array($relation, ['users', 'tracks', 'competition'])) {
             return response()->json(['message' => 'Invalid data type requested'], 400);
