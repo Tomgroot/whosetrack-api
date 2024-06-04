@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Competition;
 use App\Models\Round;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class RoundController extends Controller {
 
@@ -20,16 +22,21 @@ class RoundController extends Controller {
             'competition_id' => $competition_id,
         ], Round::$rules);
 
+        $competition = Competition::findOrFail($competition_id);
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $entity = Round::create([
-            'competition_id' => $competition_id,
+        $round = Round::create([
+            'competition_id' => $competition->id,
             'status' => 'pick_track',
         ]);
 
-        return response()->json($entity, 201);
+        $user_ids = $competition->users->pluck('id')->toArray();
+        $round->users()->sync($user_ids);
+
+        return response()->json($round, 201);
     }
 
     public function getResults($round_id): JsonResponse {
@@ -37,23 +44,24 @@ class RoundController extends Controller {
         return response()->json($round->results());
     }
 
-    public function submitGuesses(Request $request): JsonResponse{
+    public function readyGuesses(Request $request): JsonResponse{
+        // TODO: unsafe usage of user id, everybody can edit each others readiness
+        $validated = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+
         $round = Round::findOrFail($request->route('round_id'));
 
-        // This can be done more efficiently with a join
-
-        foreach($round->tracks as $track){
-            $guess = $track->guesses->where('user_id', $request->user_id)->first();
-            $guess->ready = true;
-            $guess->save();
-        }
-
-        $round->status = 'guess_whose';
+        DB::table('guesses')
+            ->join('tracks', 'guesses.track_id', '=', 'tracks.id')
+            ->join('rounds', 'tracks.round_id', '=', 'rounds.id')
+            ->where('rounds.id', $round->id)
+            ->where('guesses.user_id', $validated['user_id'])
+            ->update(['guesses.ready' => true]);
 
         $round->updateStatus();
-        
-        return response()->json($round);
 
+        return response()->json($round);
     }
 
     public function getRelation($round_id, $relation) {

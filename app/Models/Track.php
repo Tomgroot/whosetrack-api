@@ -32,7 +32,7 @@ class Track extends Model {
     public $appends = [
         'nickname',
     ];
-    
+
     public $with = [
         'guesses',
     ];
@@ -56,6 +56,7 @@ class Track extends Model {
     }
 
     public function getNicknameAttribute() {
-        return $this->user()->first()->nickname;
+        $user = $this->user()->first();
+        return !is_null($user) ? $user->nickname : null;
     }
 }

@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Competition;
+use App\Models\User;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+
+class CreateAndReadyCompetitors extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'create-and-ready-competitors {joinCode} {userId?}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Creates users, join the specific competition, submit a track and ready up.';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        DB::table('users')->insertOrIgnore([
+            ['id' => 101, 'nickname' => 'Henk', 'image_url' => null, 'spotify_guid' => null],
+            ['id' => 102, 'nickname' => 'Peter', 'image_url' => null, 'spotify_guid' => null],
+        ]);
+
+        $competition = Competition::where('join_code', $this->argument('joinCode'))->first();
+
+        if (!$competition) {
+            throw new \Exception('Competition not found');
+        }
+        DB::table('competition_user')->insertOrIgnore([
+            ['user_id' => 101, 'competition_id' => $competition->id],
+            ['user_id' => 102, 'competition_id' => $competition->id],
+        ]);
+
+        $round = $competition->mostRecentRound();
+
+        DB::table('round_user')->insertOrIgnore([
+            ['user_id' => 101, 'round_id' => $round->id],
+            ['user_id' => 102, 'round_id' => $round->id],
+        ]);
+
+        $tracks = [
+            [
+                'user_id' => 101,
+                'round_id' => $round->id,
+                'ready' => true,
+                'spotify_url' => 'https://open.spotify.com/track/7D5vAulNfrQV6xEwzgH0OF?si=a7bafa3dc3fb4d3b'
+            ],
+            [
+                'user_id' => 102,
+                'round_id' => $round->id,
+                'ready' => true,
+                'spotify_url' => 'https://open.spotify.com/track/1V6ecjVT6IgPBiAtNyDWhh?si=e9627d25b78044e6'
+            ]
+        ];
+
+        if (!is_null($userId = $this->argument('userId'))) {
+            $tracks[] = [
+                'user_id' => $userId,
+                'round_id' => $round->id,
+                'ready' => true,
+                'spotify_url' => 'https://open.spotify.com/track/44qWZU2uA8T5JHGPvk1lUs?si=81813ff140334bc3'
+            ];
+        }
+
+        $count = DB::table('tracks')->insertOrIgnore($tracks);
+
+        $round->updateStatus();
+
+        if (is_null($userId)) {
+            return;
+        }
+
+        $insertedIds = DB::table('tracks')
+            ->orderBy('id', 'desc')
+            ->take($count)
+            ->pluck('id');
+
+        $guesses = [
+            [
+                'track_id' => $insertedIds[0],
+                'guessed_user_id' => 101,
+                'ready' => true,
+            ],
+            [
+                'track_id' => $insertedIds[1],
+                'guessed_user_id' => 102,
+                'ready' => true,
+            ],
+            [
+                'track_id' => $insertedIds[2],
+                'guessed_user_id' => $userId,
+                'ready' => true,
+            ]
+        ];
+
+        foreach ([101, 102] as $id) {
+            foreach ($guesses as $guess) {
+                $guess['user_id'] = $id;
+                DB::table('guesses')->insertOrIgnore($guess);
+            }
+        }
+    }
+}
