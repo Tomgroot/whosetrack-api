@@ -32,6 +32,10 @@ class Track extends Model {
     public $appends = [
         'nickname',
     ];
+    
+    public $with = [
+        'guesses',
+    ];
 
     public function getMissingGuessUsersAttribute() {
         $guessUserIds = $this->guesses->pluck('user_id')->unique();

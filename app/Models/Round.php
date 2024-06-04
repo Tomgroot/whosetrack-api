@@ -82,28 +82,36 @@ class Round extends Model {
         $scores = [];
 
         foreach($users as $user){
-            $scores[$user->id] = [
+            $scores[] = [
                 'position' => 0,
                 'score' => 0,
+                'user_id' => $user->id,
+                'nickname' => $user->nickname
             ];
         }
 
         foreach($this->tracks as $track){
-            foreach($track->guesses->sortBy('user_id')->values() as $guess){
-                $guesser_id = $guess->user_id;
-                $extra = (int)($guess->guessed_user_id === $track->user_id || $guesser_id === $track->user_id);
-                $scores[$guesser_id]['score'] += $extra;
+            foreach($track->guesses->sortBy('user_id')->values() as $index => $guess){
+                $extra = (int)($guess->guessed_user_id === $track->user_id || $guess->user_id === $track->user_id);
+                $scores[$index]['score'] += $extra;
             }
         }
 
         // Sort the array based on the scores, but keep the user ids as keys.
-        uasort($scores, function($a, $b) {
+        usort($scores, function($a, $b) {
             return $b['score'] <=> $a['score'];
         });
 
-        $position = 1;
+        $position = 0;
+        $previous_score = -1;
         foreach ($scores as &$score) {
-            $score['position'] = $position++;
+            if($score['score'] == $previous_score){
+                $position = $scores[$position - 1]['position'];
+            } else {
+                $score['position'] = $position;
+            }
+            $position += 1;
+            $previous_score = $score['score'];
         }
 
         return $scores;
