@@ -71,6 +71,7 @@ class Round extends Model {
                     return;
                 }
             }
+            $this->currently_playing_track = 0;
             $this->status = self::STATUS_FINISHED;
         }
 

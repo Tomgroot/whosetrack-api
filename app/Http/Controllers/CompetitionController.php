@@ -15,11 +15,19 @@ class CompetitionController extends Controller {
         self::$entity = Competition::class;
     }
 
+    public function addUserToRecentRound($competition, $user) {
+        $round = $competition->mostRecentRound();
+        if ($round->users()->where('users.id', $user->id)->exists()) {
+            return false;
+        } else {
+            $round->users()->attach($user);
+        }
+    }
+
     public function addUserToCompetitionAndRound($competition, $user) {
         $competition->users()->attach($user);
 
-        $round = $competition->mostRecentRound();
-        $round->users()->attach($user);
+        addUserToRecentRound($competition, $user);
     }
 
     public function store(Request $request): JsonResponse {
@@ -73,10 +81,11 @@ class CompetitionController extends Controller {
         }
 
         if ($competition->users()->where('users.id', $user->id)->exists()) {
-            return response()->json(['error' => 'User already in competition'], 401);
+            $this->addUserToRecentRound($competition, $user);
+        } else {
+            $this->addUserToCompetitionAndRound($competition, $user);
         }
 
-        $this->addUserToCompetitionAndRound($competition, $user);
 
         return response()->json([
             'competition_id' => $competition->id,

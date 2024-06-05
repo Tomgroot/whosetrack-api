@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Competition;
 use App\Models\Round;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -33,8 +34,8 @@ class RoundController extends Controller {
             'status' => 'pick_track',
         ]);
 
-        $user_ids = $competition->users->pluck('id')->toArray();
-        $round->users()->sync($user_ids);
+        
+        $round->users()->attach(User::findOrFail($request->user_id));
 
         return response()->json($round, 201);
     }
