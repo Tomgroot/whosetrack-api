@@ -27,7 +27,7 @@ class CompetitionController extends Controller {
     public function addUserToCompetitionAndRound($competition, $user) {
         $competition->users()->attach($user);
 
-        addUserToRecentRound($competition, $user);
+        $this->addUserToRecentRound($competition, $user);
     }
 
     public function store(Request $request): JsonResponse {

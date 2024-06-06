@@ -107,7 +107,7 @@ class Round extends Model {
         $previous_score = -1;
         foreach ($scores as &$score) {
             if($score['score'] == $previous_score){
-                $position = $scores[$position - 1]['position'];
+                $score['position'] = $scores[$position - 1]['position'];
             } else {
                 $score['position'] = $position;
             }
