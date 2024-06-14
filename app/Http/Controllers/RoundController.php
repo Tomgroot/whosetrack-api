@@ -32,9 +32,9 @@ class RoundController extends Controller {
         $round = Round::create([
             'competition_id' => $competition->id,
             'status' => 'pick_track',
+            'currently_playing_track' => 0,
         ]);
 
-        
         $round->users()->attach(User::findOrFail($request->user_id));
 
         return response()->json($round, 201);

@@ -39,7 +39,7 @@ class TrackController extends Controller {
         }
 
         $data = [
-            'round_id' => $round_id,
+            'round_id' => intval($round_id),
             'user_id' => $request->get('user_id'),
             'spotify_url' => $request->get('spotify_url'),
         ];
