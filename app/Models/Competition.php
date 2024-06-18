@@ -10,9 +10,11 @@ class Competition extends Model {
 
     public static $rules = [
         'user_id' => 'required|integer|exists:users,id',
+        'name' => 'string',
     ];
 
     protected $fillable = [
+        'name',
         'join_code',
         'joinable',
         'created_by',

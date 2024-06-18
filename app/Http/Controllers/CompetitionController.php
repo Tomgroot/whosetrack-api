@@ -38,19 +38,13 @@ class CompetitionController extends Controller {
         }
 
         $competition = Competition::create([
+            'name' => $validated['name'],
             'join_code' => self::generateRandomJoinCode(),
             'joinable' => true,
             'created_by' => $validated['user_id'],
         ]);
 
-        // At creation of a competition, users do not have to call.
-        Round::create([
-            'competition_id' => $competition->id,
-            'current_track' => 0,
-            'status' => 'pick_track',
-        ]);
-
-        $this->addUserToCompetitionAndRound($competition, $user);
+        $competition->users()->attach($user);
 
         return response()->json($competition, 201);
     }
@@ -111,6 +105,14 @@ class CompetitionController extends Controller {
         if (is_null($competition = Competition::find($competition_id))) {
             return response()->json(['message' => 'Competition not found'], 404);
         }
+
+        // if ($relation === 'rounds') {
+        //     $competition->load(['rounds' => function ($query) {
+        //         $query->where('status', 'finished')->get()->each(function ($items) {
+        //             $items->append('results');
+        //         });
+        //     }]);
+        // }
 
         return response()->json($competition->{$relation});
     }

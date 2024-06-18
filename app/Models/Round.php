@@ -14,6 +14,7 @@ class Round extends Model {
 
     protected $fillable = [
         'competition_id',
+        'created_by',
         'currently_playing_track',
         'status',
     ];
@@ -29,13 +30,17 @@ class Round extends Model {
     ];
 
     public $appends = [
-        'creator',
+        'results',
     ];
-
+    
     public static function rules($id) {
         return [
             'currently_playing_track' => 'integer',
         ];
+    }
+    
+    public function creator() {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function competition() {
@@ -48,10 +53,6 @@ class Round extends Model {
 
     public function users() {
         return $this->belongsToMany(User::class);
-    }
-
-    public function getCreatorAttribute() {
-        return $this->competition()->first()->creator()->first();
     }
 
     public function updateStatus() {
@@ -76,6 +77,14 @@ class Round extends Model {
         }
 
         $this->save();
+    }
+
+    public function getResultsAttribute() {
+        if($this->status == 'finished'){
+            return $this->results();
+        } else {
+            return [];
+        }
     }
 
     public function results() {
