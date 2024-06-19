@@ -31,6 +31,8 @@ class CreateAndReadyCompetitors extends Command
         DB::table('users')->insertOrIgnore([
             ['id' => 101, 'nickname' => 'Henk', 'image_url' => null, 'spotify_guid' => null],
             ['id' => 102, 'nickname' => 'Peter', 'image_url' => null, 'spotify_guid' => null],
+            ['id' => 103, 'nickname' => 'Jan', 'image_url' => null, 'spotify_guid' => null],
+            ['id' => 104, 'nickname' => 'Freek', 'image_url' => null, 'spotify_guid' => null],
         ]);
 
         $competition = Competition::where('join_code', $this->argument('joinCode'))->first();
@@ -41,6 +43,8 @@ class CreateAndReadyCompetitors extends Command
         DB::table('competition_user')->insertOrIgnore([
             ['user_id' => 101, 'competition_id' => $competition->id],
             ['user_id' => 102, 'competition_id' => $competition->id],
+            ['user_id' => 103, 'competition_id' => $competition->id],
+            ['user_id' => 104, 'competition_id' => $competition->id],
         ]);
 
         $round = $competition->mostRecentRound();
@@ -48,6 +52,8 @@ class CreateAndReadyCompetitors extends Command
         DB::table('round_user')->insertOrIgnore([
             ['user_id' => 101, 'round_id' => $round->id],
             ['user_id' => 102, 'round_id' => $round->id],
+            ['user_id' => 103, 'round_id' => $round->id],
+            ['user_id' => 104, 'round_id' => $round->id],
         ]);
 
         $tracks = [
@@ -55,13 +61,25 @@ class CreateAndReadyCompetitors extends Command
                 'user_id' => 101,
                 'round_id' => $round->id,
                 'ready' => true,
-                'spotify_url' => 'https://open.spotify.com/track/7D5vAulNfrQV6xEwzgH0OF?si=a7bafa3dc3fb4d3b'
+                'spotify_url' => 'https://open.spotify.com/track/6lKaiRbX5DtGMGNvE4xRbx?si=56ff71c45dbc40cb'
             ],
             [
                 'user_id' => 102,
                 'round_id' => $round->id,
                 'ready' => true,
                 'spotify_url' => 'https://open.spotify.com/track/1V6ecjVT6IgPBiAtNyDWhh?si=e9627d25b78044e6'
+            ],
+            [
+                'user_id' => 103,
+                'round_id' => $round->id,
+                'ready' => true,
+                'spotify_url' => 'https://open.spotify.com/track/4YEsNhGhXXtefznetrzhMb?si=62052ba2c97048ac'
+            ],
+            [
+                'user_id' => 104,
+                'round_id' => $round->id,
+                'ready' => true,
+                'spotify_url' => 'https://open.spotify.com/track/46HNZY1i7O6jwTA7Slo2PI?si=dd25fb86c9f6411e'
             ]
         ];
 
@@ -84,7 +102,7 @@ class CreateAndReadyCompetitors extends Command
 
         $insertedIds = DB::table('tracks')
             ->orderBy('id', 'desc')
-            ->take($count)
+            ->take(5)
             ->pluck('id');
 
         $guesses = [
@@ -100,12 +118,22 @@ class CreateAndReadyCompetitors extends Command
             ],
             [
                 'track_id' => $insertedIds[2],
+                'guessed_user_id' => 103,
+                'ready' => true,
+            ],
+            [
+                'track_id' => $insertedIds[3],
+                'guessed_user_id' => 104,
+                'ready' => true,
+            ],
+            [
+                'track_id' => $insertedIds[4],
                 'guessed_user_id' => $userId,
                 'ready' => true,
             ]
         ];
 
-        foreach ([101, 102] as $id) {
+        foreach ([101, 102, 103, 104] as $id) {
             foreach ($guesses as $guess) {
                 $guess['user_id'] = $id;
                 DB::table('guesses')->insertOrIgnore($guess);

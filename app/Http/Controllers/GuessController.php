@@ -52,7 +52,7 @@ class GuessController extends Controller {
         }
 
         $guess = Guess::create([
-            'track_id' => $track_id,
+            'track_id' => intval($track_id),
             'user_id' => $request->get('user_id'),
             'guessed_user_id' => $request->get('guessed_user_id'),
         ]);

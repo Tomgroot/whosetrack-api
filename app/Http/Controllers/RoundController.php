@@ -38,9 +38,11 @@ class RoundController extends Controller {
             'competition_id' => $competition->id,
             'status' => 'pick_track',
             'created_by' => $user_id,
+            'currently_playing_track' => 0,
         ]);
-        
+
         $round->users()->attach($user);
+
 
         return response()->json($round, 201);
     }
