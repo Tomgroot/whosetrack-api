@@ -14,13 +14,8 @@ jobs:
       - name: Composer install in plugins
         uses: "php-actions/composer@v6"
       - name: Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: sebastianpopp/ftp-action@releases/v2
         with:
-          server: ${{ secrets.SERVER }}
-          username: ${{ secrets.USER }}
+          host: ${{ secrets.SERVER }}
+          user: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
-          server-dir: /
-          timeout: 300000
-          exclude: |
-            **/.git*
-            **/.git*/**
