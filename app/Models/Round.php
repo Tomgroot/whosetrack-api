@@ -32,6 +32,10 @@ class Round extends Model {
         'creator',
     ];
 
+    protected $casts = [
+        'competition_id' => 'integer',
+    ];
+
     public static function rules($id) {
         return [
             'currently_playing_track' => 'integer',

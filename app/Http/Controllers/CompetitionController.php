@@ -40,7 +40,7 @@ class CompetitionController extends Controller {
         $competition = Competition::create([
             'join_code' => self::generateRandomJoinCode(),
             'joinable' => true,
-            'created_by' => $validated['user_id'],
+            'created_by' => intval($validated['user_id']),
         ]);
 
         // At creation of a competition, users do not have to call.
