@@ -66,12 +66,14 @@ class CompetitionController extends Controller {
             return response()->json(['error' => 'User not found'], 404);
         }
 
-        $competition = Competition::where('join_code', $join_code)
-            ->where('joinable', true)
-            ->first();
+        $competition = Competition::where('join_code', $join_code)->first();
 
         if (is_null($competition)) {
             return response()->json(['error' => 'Competition not found'], 404);
+        }
+
+        if (!$competition->joinable && $competition->id != $_ENV['DEMO_COMPETITION_ID']){
+                return response()->json(['error' => 'Competition is not joinable found'], 422);
         }
 
         if ($competition->users()->where('users.id', $user->id)->exists()) {
