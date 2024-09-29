@@ -14,8 +14,21 @@ jobs:
       - name: Composer install in plugins
         uses: "php-actions/composer@v6"
       - name: Sync files
-        uses: sebastianpopp/ftp-action@releases/v2
+        uses: Tomgroot/FTP-Deploy-Action@0.0.0
         with:
-          host: ${{ secrets.SERVER }}
-          user: ${{ secrets.USER }}
+          exclude: |
+            **/vendor/**
+            **/.git*
+            **/.git*/**
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+      - name: Sync vendor folder
+        uses: Tomgroot/FTP-Deploy-Action@0.0.0
+        with:
+          exclude: |
+            **/.git*
+            **/.git*/**
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
