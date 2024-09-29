@@ -9,8 +9,8 @@ class Competition extends Model {
     use HasFactory;
 
     public static $rules = [
-        'user_id' => 'required|integer|exists:users,id',
         'name' => 'string',
+        'created_by' => 'required|integer|exists:users,id',
     ];
 
     protected $fillable = [

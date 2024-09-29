@@ -15,7 +15,7 @@ class GuessController extends Controller {
         self::$entity = Guess::class;
     }
 
-    public function updateByTrack(Request $request): JsonResponse {
+    public function store(Request $request): JsonResponse {
         $track_id = $request->route('track_id') ?? $request->get('track_id');
 
         $validator = Validator::make([
@@ -30,25 +30,10 @@ class GuessController extends Controller {
 
         $guess = Guess::where('track_id', $track_id)->where('user_id', $request->get('user_id'))->first();
 
-        if($guess != null){
+        if(!is_null($guess)){
             $guess->guessed_user_id = $request->get('guessed_user_id');
             $guess->save();
-        }
-
-        return response()->json($guess, 201);
-    }
-
-    public function store(Request $request): JsonResponse {
-        $track_id = $request->route('track_id') ?? $request->get('track_id');
-
-        $validator = Validator::make([
-            'track_id' => $track_id,
-            'user_id' => $request->get('user_id'),
-            'guessed_user_id' => $request->get('guessed_user_id'),
-        ], Guess::$rules);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json($guess, 201);
         }
 
         $guess = Guess::create([
