@@ -41,7 +41,7 @@ class CompetitionController extends Controller {
             'name' => $validated['name'],
             'join_code' => self::generateRandomJoinCode(),
             'joinable' => true,
-            'created_by' => $validated['user_id'],
+            'created_by' => intval($validated['user_id']),
         ]);
 
         $competition->users()->attach($user);

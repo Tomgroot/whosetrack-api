@@ -29,6 +29,10 @@ class Competition extends Model {
         'most_recent_round',
     ];
 
+    protected $casts = [
+        'created_by' => 'integer',
+    ];
+
     public static function rules($id) {
         return [];
     }
