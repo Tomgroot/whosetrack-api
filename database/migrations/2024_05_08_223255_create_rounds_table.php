@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('rounds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('competition_id')->index();
+            $table->foreignId('created_by')->index();
             $table->integer('currently_playing_track')->default(0);
             $table->enum('status', [
                 Round::STATUS_PICK_TRACK,
