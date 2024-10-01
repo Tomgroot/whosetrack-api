@@ -72,8 +72,8 @@ class CompetitionController extends Controller {
             return response()->json(['error' => 'Competition not found'], 404);
         }
 
-        if (!$competition->joinable && $competition->id != $_ENV['DEMO_COMPETITION_ID']){
-                return response()->json(['error' => 'Competition is not joinable found'], 422);
+        if (!$competition->joinable && $competition->id != config('demo_constants.demo_competition_id')){
+                return response()->json(['error' => 'Competition is not joinable'], 422);
         }
 
         if ($competition->users()->where('users.id', $user->id)->exists()) {
@@ -107,14 +107,6 @@ class CompetitionController extends Controller {
         if (is_null($competition = Competition::find($competition_id))) {
             return response()->json(['message' => 'Competition not found'], 404);
         }
-
-        // if ($relation === 'rounds') {
-        //     $competition->load(['rounds' => function ($query) {
-        //         $query->where('status', 'finished')->get()->each(function ($items) {
-        //             $items->append('results');
-        //         });
-        //     }]);
-        // }
 
         return response()->json($competition->{$relation});
     }

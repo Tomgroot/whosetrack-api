@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
     {
 
         $user_1 = User::create([
-            'id' => $_ENV['DEMO_USER_ID'],
-            'nickname' => 'Demo user 1',
+            'id' => config('demo_constants.demo_user_id'),
+            'nickname' => config('demo_constants.demo_user_name'),
         ]);
         
         $user_2 = User::create([
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $demo_competition = Competition::create([
-            'id' => $_ENV['DEMO_COMPETITION_ID'],
+            'id' => config('demo_constants.demo_competition_id'),
             'name' => 'Demo competition',
             'join_code' => 'DEMOOO',
             'joinable' => false,
@@ -51,7 +51,7 @@ class DatabaseSeeder extends Seeder
         ];        
 
         $cycle_round = Round::create([
-            'id' => $_ENV['DEMO_ROUND_ID_1'],
+            'id' => config('demo_constants.demo_round_id_1'),
             'competition_id' => $demo_competition->id,
             'status' => 'finished',
             'created_by' => $user_1->id,
@@ -84,7 +84,7 @@ class DatabaseSeeder extends Seeder
         DB::table('rounds')->where('id', $cycle_round->id)->update(['created_at' => date('Y-m-d H:i:s', time() - 1000000)]);
 
         $round = Round::create([
-            'id' => $_ENV['DEMO_ROUND_ID_2'],
+            'id' => config('demo_constants.demo_round_id_2'),
             'competition_id' => $demo_competition->id,
             'status' => 'pick_track',
             'created_by' => $user_1->id,
