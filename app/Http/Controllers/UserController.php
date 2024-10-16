@@ -4,11 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserController extends Controller {
 
     public function __construct() {
         self::$entity = User::class;
+    }
+
+    public function store(Request $request): JsonResponse {
+        $validated = $request->validate(User::$rules);
+
+        if ($request->get('nickname') == 'Demo user 1') {
+            $user = User::find(config('demo_constants.demo_user_id'));
+        } else {
+            $user = User::create($validated);
+        }
+
+        return response()->json($user, 201);
     }
 
     public function index(): JsonResponse {

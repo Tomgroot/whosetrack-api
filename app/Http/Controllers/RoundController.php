@@ -18,6 +18,11 @@ class RoundController extends Controller {
 
     public function store(Request $request): JsonResponse {
         $competition_id = $request->route('competition_id') ?? $request->get('competition_id');
+        $user_id = $request->get('user_id');
+        
+        if (is_null($user = User::find($user_id))) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
 
         $validator = Validator::make([
             'competition_id' => $competition_id,
@@ -32,10 +37,12 @@ class RoundController extends Controller {
         $round = Round::create([
             'competition_id' => $competition->id,
             'status' => 'pick_track',
+            'created_by' => $user_id,
             'currently_playing_track' => 0,
         ]);
 
-        $round->users()->attach(User::findOrFail($request->user_id));
+        $round->users()->attach($user);
+
 
         return response()->json($round, 201);
     }

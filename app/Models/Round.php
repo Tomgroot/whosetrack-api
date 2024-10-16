@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Round extends Model {
     use HasFactory;
@@ -14,6 +15,7 @@ class Round extends Model {
 
     protected $fillable = [
         'competition_id',
+        'created_by',
         'currently_playing_track',
         'status',
     ];
@@ -29,9 +31,9 @@ class Round extends Model {
     ];
 
     public $appends = [
-        'creator',
+        'results',
     ];
-
+  
     protected $casts = [
         'competition_id' => 'integer',
     ];
@@ -40,6 +42,10 @@ class Round extends Model {
         return [
             'currently_playing_track' => 'integer',
         ];
+    }
+    
+    public function creator() {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function competition() {
@@ -54,8 +60,51 @@ class Round extends Model {
         return $this->belongsToMany(User::class);
     }
 
-    public function getCreatorAttribute() {
-        return $this->competition()->first()->creator()->first();
+    public function isDemo() {
+        return $this->id == config('demo_constants.demo_round_id_1') || $this->id == config('demo_constants.demo_round_id_2');
+    }
+
+    public function handleDemoGuessWhose() {
+        if ($this->isDemo()){
+
+            $dummy_demo_users = $this->users->where('id', '!=', config('demo_constants.demo_user_id'));
+            $demo_user_track = $this->tracks->where('user_id', config('demo_constants.demo_user_id'))->first();
+
+            foreach($dummy_demo_users as $guess_user){
+                $guess = Guess::create([
+                    'user_id' => $guess_user->id,
+                    'track_id' => $demo_user_track->id,
+                    'guessed_user_id' => $guess_user->id,
+                    'ready' => true,
+                ]);
+            }
+        }
+    }
+
+    public function handleDemoFinished() {
+        if ($this->isDemo()){
+            $cycle_round = ($this->id == config('demo_constants.demo_round_id_1')) ? config('demo_constants.demo_round_id_2') : config('demo_constants.demo_round_id_1');
+
+            $cycle_round = Round::find($cycle_round);
+
+            // Remove demo user track and guesses so round can be played again.
+            $demo_user_1_track = $cycle_round->tracks->where('user_id', config('demo_constants.demo_user_id'))->first();
+            $demo_user_1_track -> delete();
+            $other_user_tracks = $cycle_round->tracks->where('user_id', '!=', config('demo_constants.demo_user_id'));
+            foreach($other_user_tracks as $track){
+                $demo_user_1_guess = $track->guesses->where('user_id', config('demo_constants.demo_user_id'))->first();
+                $demo_user_1_guess->delete();
+            }
+
+            $cycle_round->status = self::STATUS_PICK_TRACK;
+
+            $cycle_round->save();
+            
+            // Update creation times to put `most_recent_round` correctly. Done via SQL since eloquent doesn't handle creation time
+            DB::table('rounds')->where('id', $cycle_round->id)->update(['created_at' => date('Y-m-d H:i:s', time())]);
+            DB::table('rounds')->where('id', $this->id)->update(['created_at' => date('Y-m-d H:i:s', time() - 1000000)]);
+        }
+
     }
 
     public function updateStatus() {
@@ -68,6 +117,8 @@ class Round extends Model {
 
         if ($this->status == self::STATUS_PICK_TRACK){
             $this->status = self::STATUS_GUESS_WHOSE;
+            $this->handleDemoGuessWhose();
+
         } elseif ($this->status == self::STATUS_GUESS_WHOSE){
             $nr_users = $this->users->count();
             foreach($this->tracks as $track){
@@ -77,9 +128,18 @@ class Round extends Model {
             }
             $this->currently_playing_track = 0;
             $this->status = self::STATUS_FINISHED;
+            $this->handleDemoFinished();
         }
 
         $this->save();
+    }
+
+    public function getResultsAttribute() {
+        if($this->status == 'finished'){
+            return $this->results();
+        } else {
+            return [];
+        }
     }
 
     public function results() {
