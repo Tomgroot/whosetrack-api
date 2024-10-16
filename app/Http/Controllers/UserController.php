@@ -15,7 +15,7 @@ class UserController extends Controller {
     public function store(Request $request): JsonResponse {
         $validated = $request->validate(User::$rules);
 
-        if ($request->get('nickname') == 'Demo user 1') {
+        if ($request->get('nickname') == config('demo_constants.demo_user_name')) {
             $user = User::find(config('demo_constants.demo_user_id'));
         } else {
             $user = User::create($validated);
