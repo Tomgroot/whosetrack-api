@@ -33,7 +33,7 @@ class CompetitionController extends Controller {
     public function store(Request $request): JsonResponse {
         $validated = $request->validate(Competition::$rules);
 
-        if (is_null($user = User::find($validated['user_id']))) {
+        if (is_null($user = User::find($validated['created_by']))) {
             return response()->json(['error' => 'User not found'], 404);
         }
 
@@ -41,7 +41,7 @@ class CompetitionController extends Controller {
             'name' => $validated['name'],
             'join_code' => self::generateRandomJoinCode(),
             'joinable' => true,
-            'created_by' => intval($validated['user_id']),
+            'created_by' => intval($validated['created_by']),
         ]);
 
         $competition->users()->attach($user);
