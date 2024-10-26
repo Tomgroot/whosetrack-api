@@ -22,6 +22,13 @@ class Guess extends Model {
         'ready',
     ];
 
+    protected $casts = [
+        'user_id' => 'integer',
+        'track_id' => 'integer',
+        'guessed_user_id' => 'integer',
+        'ready' => 'boolean',
+    ];
+
     public $appends = [
         'nickname',
     ];

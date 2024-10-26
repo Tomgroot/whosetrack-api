@@ -33,9 +33,11 @@ class Round extends Model {
     public $appends = [
         'results',
     ];
-  
+
     protected $casts = [
         'competition_id' => 'integer',
+        'created_by' => 'integer',
+        'currently_playing_track' => 'integer',
     ];
 
     public static function rules($id) {
@@ -43,7 +45,7 @@ class Round extends Model {
             'currently_playing_track' => 'integer',
         ];
     }
-    
+
     public function creator() {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -99,7 +101,7 @@ class Round extends Model {
             $cycle_round->status = self::STATUS_PICK_TRACK;
 
             $cycle_round->save();
-            
+
             // Update creation times to put `most_recent_round` correctly. Done via SQL since eloquent doesn't handle creation time
             DB::table('rounds')->where('id', $cycle_round->id)->update(['created_at' => date('Y-m-d H:i:s', time())]);
             DB::table('rounds')->where('id', $this->id)->update(['created_at' => date('Y-m-d H:i:s', time() - 1000000)]);

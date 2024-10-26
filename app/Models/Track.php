@@ -29,6 +29,12 @@ class Track extends Model {
         return $rules;
     }
 
+    protected $casts = [
+        'user_id' => 'integer',
+        'round_id' => 'integer',
+        'ready' => 'boolean',
+    ];
+
     public $appends = [
         'nickname',
     ];

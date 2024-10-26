@@ -31,6 +31,7 @@ class Competition extends Model {
 
     protected $casts = [
         'created_by' => 'integer',
+        'joinable' => 'boolean',
     ];
 
     public static function rules($id) {
