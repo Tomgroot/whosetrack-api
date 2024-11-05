@@ -32,6 +32,7 @@ class TrackController extends Controller {
             'round_id' => $round_id,
             'user_id' => $request->get('user_id'),
             'spotify_url' => $request->get('spotify_url'),
+            'ready' => false
         ], Track::$rules);
 
         if ($validator->fails()) {
@@ -42,6 +43,7 @@ class TrackController extends Controller {
             'round_id' => intval($round_id),
             'user_id' => $request->get('user_id'),
             'spotify_url' => $request->get('spotify_url'),
+            'ready' => false
         ];
 
         if (!is_null($ready = $request->get('ready'))) {

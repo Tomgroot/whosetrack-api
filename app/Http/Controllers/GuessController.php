@@ -22,6 +22,7 @@ class GuessController extends Controller {
             'track_id' => $track_id,
             'user_id' => $request->get('user_id'),
             'guessed_user_id' => $request->get('guessed_user_id'),
+            'ready' => false
         ], Guess::$rules);
 
         if ($validator->fails()) {
@@ -40,6 +41,7 @@ class GuessController extends Controller {
             'track_id' => intval($track_id),
             'user_id' => $request->get('user_id'),
             'guessed_user_id' => $request->get('guessed_user_id'),
+            'ready' => false
         ]);
 
         return response()->json($guess, 201);
