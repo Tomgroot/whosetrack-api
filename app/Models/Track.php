@@ -19,7 +19,7 @@ class Track extends Model {
         'user_id' => 'required|integer|exists:users,id',
         'round_id' => 'required|integer|exists:rounds,id',
         'spotify_url' => 'url|starts_with:https://open.spotify.com/',
-        'ready' => 'boolean',
+        'ready' => 'required|boolean',
     ];
 
     public static function rules($id) {

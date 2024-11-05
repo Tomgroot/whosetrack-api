@@ -43,6 +43,8 @@ class RoundController extends Controller {
 
         $round->users()->attach($user);
 
+        // Somehow this is necessary to output all the variables
+        $round = Round::findOrFail($round->id);
 
         return response()->json($round, 201);
     }
