@@ -30,7 +30,19 @@ class CompetitionController extends Controller {
         $this->addUserToRecentRound($competition, $user);
     }
 
+    public function make_random_name(): string {
+        $adjectives = config('default_competition_names.adjectives');
+        $animals = config('default_competition_names.animals');
+
+        return $adjectives[array_rand($adjectives)] . ' ' . $animals[array_rand($animals)];
+
+    }
+
     public function store(Request $request): JsonResponse {
+        $request->merge([
+            'name' => $request->get('name') ?? $this->make_random_name(),
+        ]);
+
         $validated = $request->validate(Competition::$rules);
 
         if (is_null($user = User::find($validated['created_by']))) {
@@ -45,6 +57,15 @@ class CompetitionController extends Controller {
         ]);
 
         $competition->users()->attach($user);
+
+        // At creation of a competition, users do not have to call.
+        Round::create([
+            'competition_id' => $competition->id,
+            'current_track' => 0,
+            'status' => 'pick_track',
+            'created_by' => intval($validated['created_by']),
+        ]);
+        $this->addUserToRecentRound($competition, $user);
 
         return response()->json($competition, 201);
     }
