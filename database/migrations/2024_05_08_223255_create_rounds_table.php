@@ -18,10 +18,12 @@ return new class extends Migration
             $table->foreignId('created_by')->index();
             $table->integer('currently_playing_track')->default(0);
             $table->enum('status', [
+                Round::STATUS_JOINING,
                 Round::STATUS_PICK_TRACK,
                 Round::STATUS_GUESS_WHOSE,
                 Round::STATUS_FINISHED
-            ]);
+            ])->default(Round::STATUS_JOINING);
+            $table->string('gamemode')->default('custom');
             $table->timestamps();
         });
     }
