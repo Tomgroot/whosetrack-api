@@ -36,7 +36,7 @@ class RoundController extends Controller {
 
         $round = Round::create([
             'competition_id' => $competition->id,
-            'status' => 'pick_track',
+            'status' => 'joining',
             'created_by' => $user_id,
             'currently_playing_track' => 0,
         ]);
@@ -60,6 +60,20 @@ class RoundController extends Controller {
     public function getResults($round_id): JsonResponse {
         $round = Round::findOrFail($round_id);
         return response()->json($round->results());
+    }
+
+    public function updateRoundStatus(Request $request): JsonResponse{
+
+        $round = Round::findOrFail($request->route('round_id'));
+
+        if($round->status = Round::STATUS_JOINING){
+            $round->status = Round::STATUS_PICK_TRACK;
+            $round->save();
+        } else {
+            $round->updateStatus();
+        }
+
+        return response()->json($round);
     }
 
     public function readyGuesses(Request $request): JsonResponse{

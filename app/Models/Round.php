@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 class Round extends Model {
     use HasFactory;
 
+    public const STATUS_JOINING = 'joining';
     public const STATUS_PICK_TRACK = 'pick_track';
     public const STATUS_GUESS_WHOSE = 'guess_whose';
     public const STATUS_FINISHED = 'finished';
@@ -18,6 +19,7 @@ class Round extends Model {
         'created_by',
         'currently_playing_track',
         'status',
+        'gamemode',
     ];
 
     public static $rules = [
@@ -98,7 +100,7 @@ class Round extends Model {
                 $demo_user_1_guess->delete();
             }
 
-            $cycle_round->status = self::STATUS_PICK_TRACK;
+            $cycle_round->status = self::STATUS_JOINING;
 
             $cycle_round->save();
 
@@ -110,6 +112,10 @@ class Round extends Model {
     }
 
     public function updateStatus() {
+        if ($this->status == self::STATUS_JOINING){
+            return;
+        }
+
         $this->load('tracks');
 
         // Users should not start guessing when they are alone or with 2 in the competition.

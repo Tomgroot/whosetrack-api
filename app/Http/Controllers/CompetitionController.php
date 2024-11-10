@@ -62,7 +62,7 @@ class CompetitionController extends Controller {
         Round::create([
             'competition_id' => $competition->id,
             'current_track' => 0,
-            'status' => 'pick_track',
+            'status' => 'joining',
             'created_by' => intval($validated['created_by']),
         ]);
         $this->addUserToRecentRound($competition, $user);

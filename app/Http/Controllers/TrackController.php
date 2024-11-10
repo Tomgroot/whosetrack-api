@@ -19,6 +19,8 @@ class TrackController extends Controller {
         $rules = Track::rules($id);
         $validated = $request->validate($rules);
 
+        echo json_encode($validated);
+
         $track->update($validated);
         $track->round->updateStatus();
 
