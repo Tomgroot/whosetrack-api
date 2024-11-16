@@ -20,6 +20,7 @@ Route::prefix('v1')->group(function () {
     Route::post('competitions/{competition_id}/rounds', [RoundController::class, 'store']);
 
     Route::put('rounds/{round_id}/update', [RoundController::class, 'updateRoundStatus']);
+    Route::post('rounds/{round_id}/leave', [RoundController::class, 'leave']);
     Route::post('rounds/{round_id}/tracks', [TrackController::class, 'store']);
     Route::put('rounds/{round_id}/tracks', [TrackController::class, 'updateByRound']);
 
