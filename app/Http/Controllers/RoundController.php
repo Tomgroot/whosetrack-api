@@ -62,6 +62,21 @@ class RoundController extends Controller {
         return response()->json($round->results());
     }
 
+    public function leave(Request $request) {
+
+        $round = Round::findOrFail($request->route('round_id'));
+
+        if (is_null($user = User::find($request->get('user_id')))) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $round->users()->detach($user);
+
+        $round->tracks()->where('user_id', $user->id)->delete();
+
+        return response()->json($round);
+    }
+
     public function updateRoundStatus(Request $request): JsonResponse{
 
         $round = Round::findOrFail($request->route('round_id'));
