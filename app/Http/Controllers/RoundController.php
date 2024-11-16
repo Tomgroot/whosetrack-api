@@ -70,11 +70,15 @@ class RoundController extends Controller {
             return response()->json(['error' => 'User not found'], 404);
         }
 
-        $round->users()->detach($user);
+        if ($round->status == Round::STATUS_JOINING || $round->status == Round::STATUS_PICK_TRACK){
+            $round->users()->detach($user);
 
-        $round->tracks()->where('user_id', $user->id)->delete();
-
-        return response()->json($round);
+            $round->tracks()->where('user_id', $user->id)->delete();
+    
+            return response()->json($round);
+        } else {
+            return response()->json(['error' => 'User cannot leave ongoing competition'], 409);
+        }
     }
 
     public function updateRoundStatus(Request $request): JsonResponse{
