@@ -112,7 +112,7 @@ class Round extends Model {
     }
 
     public function updateStatus() {
-        if ($this->status == self::STATUS_JOINING){
+        if ($this->status === self::STATUS_JOINING){
             return;
         }
 

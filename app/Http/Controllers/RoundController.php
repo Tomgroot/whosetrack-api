@@ -50,9 +50,18 @@ class RoundController extends Controller {
 
     public function leaveRound($round_id, $user_id): JsonResponse {
         $round = Round::findOrFail($round_id);
-        $user = User::findOrFail($user_id);
+
+        if (is_null($user = User::find($user_id))) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        if ($round->status !== Round::STATUS_JOINING && $round->status !== Round::STATUS_PICK_TRACK) {
+            return response()->json(['error' => 'User cannot leave ongoing competition'], 409);
+        }
 
         $round->users()->detach($user);
+
+        $round->tracks()->where('user_id', $user->id)->delete();
 
         return response()->json($round);
     }
@@ -62,30 +71,11 @@ class RoundController extends Controller {
         return response()->json($round->results());
     }
 
-    public function leave(Request $request) {
-
-        $round = Round::findOrFail($request->route('round_id'));
-
-        if (is_null($user = User::find($request->get('user_id')))) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-
-        if ($round->status == Round::STATUS_JOINING || $round->status == Round::STATUS_PICK_TRACK){
-            $round->users()->detach($user);
-
-            $round->tracks()->where('user_id', $user->id)->delete();
-    
-            return response()->json($round);
-        } else {
-            return response()->json(['error' => 'User cannot leave ongoing competition'], 409);
-        }
-    }
-
     public function updateRoundStatus(Request $request): JsonResponse{
 
         $round = Round::findOrFail($request->route('round_id'));
 
-        if($round->status = Round::STATUS_JOINING){
+        if($round->status === Round::STATUS_JOINING){
             $round->status = Round::STATUS_PICK_TRACK;
             $round->save();
         } else {
