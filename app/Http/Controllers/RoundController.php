@@ -19,7 +19,7 @@ class RoundController extends Controller {
     public function store(Request $request): JsonResponse {
         $competition_id = $request->route('competition_id') ?? $request->get('competition_id');
         $user_id = $request->get('user_id');
-        
+
         if (is_null($user = User::find($user_id))) {
             return response()->json(['error' => 'User not found'], 404);
         }
@@ -43,8 +43,7 @@ class RoundController extends Controller {
 
         $round->users()->attach($user);
 
-        // Somehow this is necessary to output all the variables
-        $round = Round::findOrFail($round->id);
+        $round->load(['users', 'tracks']);
 
         return response()->json($round, 201);
     }

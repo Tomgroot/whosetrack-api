@@ -30,9 +30,9 @@ class CompetitionController extends Controller {
         $this->addUserToRecentRound($competition, $user);
     }
 
-    public function make_random_name(): string {
-        $adjectives = config('default_competition_names.adjectives');
-        $animals = config('default_competition_names.animals');
+    public function generateRandomName(): string {
+        $adjectives = config('default_competition_names.adjectives', []);
+        $animals = config('default_competition_names.animals', []);
 
         return $adjectives[array_rand($adjectives)] . ' ' . $animals[array_rand($animals)];
 
@@ -40,7 +40,7 @@ class CompetitionController extends Controller {
 
     public function store(Request $request): JsonResponse {
         $request->merge([
-            'name' => $request->get('name') ?? $this->make_random_name(),
+            'name' => $request->get('name') ?? $this->generateRandomName(),
         ]);
 
         $validated = $request->validate(Competition::$rules);
