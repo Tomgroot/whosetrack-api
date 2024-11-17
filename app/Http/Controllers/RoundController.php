@@ -48,6 +48,15 @@ class RoundController extends Controller {
         return response()->json($round, 201);
     }
 
+    public function leaveRound($round_id, $user_id): JsonResponse {
+        $round = Round::findOrFail($round_id);
+        $user = User::findOrFail($user_id);
+
+        $round->users()->detach($user);
+
+        return response()->json($round);
+    }
+
     public function getResults($round_id): JsonResponse {
         $round = Round::findOrFail($round_id);
         return response()->json($round->results());

@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function () {
     Route::post('rounds/{round_id}/tracks', [TrackController::class, 'store']);
     Route::put('rounds/{round_id}/tracks', [TrackController::class, 'updateByRound']);
 
+    Route::delete('rounds/{round_id}/users/{user_id}', [RoundController::class, 'leaveRound']);
     Route::get('rounds/{round_id}/results', [RoundController::class, 'getResults']);
     Route::get('rounds/{round_id}/{relation}', [RoundController::class, 'getRelation']);
     Route::put('rounds/{round_id}/guesses', [RoundController::class, 'readyGuesses']);
