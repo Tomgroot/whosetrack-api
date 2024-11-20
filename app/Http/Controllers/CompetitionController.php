@@ -59,13 +59,18 @@ class CompetitionController extends Controller {
         $competition->users()->attach($user);
 
         // At creation of a competition, users do not have to call.
-        Round::create([
-            'competition_id' => $competition->id,
-            'current_track' => 0,
-            'status' => 'joining',
-            'created_by' => intval($validated['created_by']),
-        ]);
-        $this->addUserToRecentRound($competition, $user);
+        if($request->get('gamemode')){
+            
+            Round::create([
+                'competition_id' => $competition->id,
+                'current_track' => 0,
+                'status' => 'joining',
+                'created_by' => intval($validated['created_by']),
+                'gamemode' => $request->get('gamemode')
+            ]);
+
+            $this->addUserToRecentRound($competition, $user);
+        }
 
         return response()->json($competition, 201);
     }
