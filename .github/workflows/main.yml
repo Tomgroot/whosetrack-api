@@ -20,12 +20,15 @@ jobs:
       - name: Composer install
         uses: "php-actions/composer@v6"
         with:
+          dev: no
+          php_version: "8.3"
           args: "--ignore-platform-reqs --optimize-autoloader"
       - name: Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           exclude: |
             sync-state.py
+            .env
             **/.git*
             **/.git*/**
           server: ${{ secrets.SERVER }}

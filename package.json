@@ -1,6 +1,9 @@
 {
     "private": true,
     "type": "module",
+    "require": {
+        "php": "8.3"
+    },
     "scripts": {
         "dev": "vite",
         "build": "vite build"

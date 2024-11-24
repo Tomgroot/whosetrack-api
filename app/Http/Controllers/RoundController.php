@@ -51,6 +51,10 @@ class RoundController extends Controller {
     public function leaveRound($round_id, $user_id): JsonResponse {
         $round = Round::findOrFail($round_id);
 
+        if ($round->isDemo()) {
+            return response()->json(['error' => 'Demo round cannot be left'], 409);
+        }
+
         if (is_null($user = User::find($user_id))) {
             return response()->json(['error' => 'User not found'], 404);
         }
