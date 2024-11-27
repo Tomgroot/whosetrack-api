@@ -53,6 +53,7 @@ class TrackController extends Controller {
         $track = Track::create($data);
 
         $track->round->updateStatus();
+        $track->guesses = [];
 
         return response()->json($track, 201);
     }

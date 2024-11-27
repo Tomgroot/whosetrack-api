@@ -67,6 +67,8 @@ class CompetitionController extends Controller {
         ]);
         $this->addUserToRecentRound($competition, $user);
 
+        $competition->load('users');
+
         return response()->json($competition, 201);
     }
 
