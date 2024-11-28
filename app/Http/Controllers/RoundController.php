@@ -19,6 +19,7 @@ class RoundController extends Controller {
     public function store(Request $request): JsonResponse {
         $competition_id = $request->route('competition_id') ?? $request->get('competition_id');
         $user_id = $request->get('user_id');
+        $gamemode = $request->get('gamemode');
 
         if (is_null($user = User::find($user_id))) {
             return response()->json(['error' => 'User not found'], 404);
@@ -39,6 +40,7 @@ class RoundController extends Controller {
             'status' => 'joining',
             'created_by' => $user_id,
             'currently_playing_track' => 0,
+            'gamemode' => $request->get('gamemode'),
         ]);
 
         $round->users()->attach($user);
