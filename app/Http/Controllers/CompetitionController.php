@@ -49,6 +49,11 @@ class CompetitionController extends Controller {
             return response()->json(['error' => 'User not found'], 404);
         }
 
+        if ($user->isDemo()) {
+            $demoCompetition = $this->show(config('demo_constants.demo_competition_id'));
+            return response()->json($demoCompetition, 201);
+        }
+
         $competition = Competition::create([
             'name' => $validated['name'],
             'join_code' => self::generateRandomJoinCode(),
@@ -60,7 +65,6 @@ class CompetitionController extends Controller {
 
         // At creation of a competition, users do not have to call.
         if($request->get('gamemode')){
-            
             Round::create([
                 'competition_id' => $competition->id,
                 'current_track' => 0,

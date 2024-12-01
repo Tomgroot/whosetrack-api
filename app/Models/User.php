@@ -49,4 +49,8 @@ class User extends Authenticatable
     public function rounds() {
         return $this->belongsToMany(Round::class)->orderBy('created_at', 'desc');
     }
+
+    public function isDemo() {
+        return $this->id === config('demo_constants.demo_user_id');
+    }
 }

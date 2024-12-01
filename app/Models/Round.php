@@ -65,7 +65,7 @@ class Round extends Model {
     }
 
     public function isDemo() {
-        return $this->id == config('demo_constants.demo_round_id_1') || $this->id == config('demo_constants.demo_round_id_2');
+        return $this->id === config('demo_constants.demo_round_id_1') || $this->id === config('demo_constants.demo_round_id_2');
     }
 
     public function handleDemoGuessWhose() {
