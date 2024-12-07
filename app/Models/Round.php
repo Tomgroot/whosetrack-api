@@ -69,46 +69,51 @@ class Round extends Model {
     }
 
     public function handleDemoGuessWhose() {
-        if ($this->isDemo()){
+        if (!$this->isDemo()) {
+            return;
+        }
 
-            $dummy_demo_users = $this->users->where('id', '!=', config('demo_constants.demo_user_id'));
-            $demo_user_track = $this->tracks->where('user_id', config('demo_constants.demo_user_id'))->first();
+        $dummy_demo_users = $this->users->where('id', '!=', config('demo_constants.demo_user_id'));
+        $demo_user_track = $this->tracks->where('user_id', config('demo_constants.demo_user_id'))->first();
 
-            foreach($dummy_demo_users as $guess_user){
-                $guess = Guess::create([
-                    'user_id' => $guess_user->id,
-                    'track_id' => $demo_user_track->id,
-                    'guessed_user_id' => $guess_user->id,
-                    'ready' => true,
-                ]);
-            }
+        foreach($dummy_demo_users as $guess_user){
+            Guess::create([
+                'user_id' => $guess_user->id,
+                'track_id' => $demo_user_track->id,
+                'guessed_user_id' => $guess_user->id,
+                'ready' => true,
+            ]);
         }
     }
 
     public function handleDemoFinished() {
-        if ($this->isDemo()){
-            $cycle_round = ($this->id == config('demo_constants.demo_round_id_1')) ? config('demo_constants.demo_round_id_2') : config('demo_constants.demo_round_id_1');
-
-            $cycle_round = Round::find($cycle_round);
-
-            // Remove demo user track and guesses so round can be played again.
-            $demo_user_1_track = $cycle_round->tracks->where('user_id', config('demo_constants.demo_user_id'))->first();
-            $demo_user_1_track -> delete();
-            $other_user_tracks = $cycle_round->tracks->where('user_id', '!=', config('demo_constants.demo_user_id'));
-            foreach($other_user_tracks as $track){
-                $demo_user_1_guess = $track->guesses->where('user_id', config('demo_constants.demo_user_id'))->first();
-                $demo_user_1_guess->delete();
-            }
-
-            $cycle_round->status = self::STATUS_JOINING;
-
-            $cycle_round->save();
-
-            // Update creation times to put `most_recent_round` correctly. Done via SQL since eloquent doesn't handle creation time
-            DB::table('rounds')->where('id', $cycle_round->id)->update(['created_at' => date('Y-m-d H:i:s', time())]);
-            DB::table('rounds')->where('id', $this->id)->update(['created_at' => date('Y-m-d H:i:s', time() - 1000000)]);
+        if (!$this->isDemo()) {
+            return;
         }
 
+        $newRoundId = ($this->id === config('demo_constants.demo_round_id_1')) ? config('demo_constants.demo_round_id_2') : config('demo_constants.demo_round_id_1');
+        $cycle_round = Round::find($newRoundId);
+
+        // Remove demo user track and guesses so round can be played again.
+        $demo_user_1_track = $cycle_round->tracks->where('user_id', config('demo_constants.demo_user_id'))->first();
+        $demo_user_1_track->delete();
+        $other_user_tracks = $cycle_round->tracks->where('user_id', '!=', config('demo_constants.demo_user_id'));
+        foreach($other_user_tracks as $track){
+            $demo_user_1_guess = $track->guesses->where('user_id', config('demo_constants.demo_user_id'))->first();
+            $demo_user_1_guess->delete();
+        }
+
+        $cycle_round->reset();
+
+        // Update creation times to put `most_recent_round` correctly. Done via SQL since eloquent doesn't handle creation time
+        DB::table('rounds')->where('id', $cycle_round->id)->update(['created_at' => date('Y-m-d H:i:s', time())]);
+        DB::table('rounds')->where('id', $this->id)->update(['created_at' => date('Y-m-d H:i:s', time() - 1000000)]);
+    }
+
+    public function reset() {
+        $this->status = self::STATUS_JOINING;
+        $this->currently_playing_track = 0;
+        $this->save();
     }
 
     public function updateStatus() {
