@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Competition;
-use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -48,6 +47,9 @@ class CreateAndReadyCompetitors extends Command
         ]);
 
         $round = $competition->mostRecentRound();
+
+        echo "Joining competition " . $competition->id . " with most recent round id " . $round->id
+            . " and creator " . $competition->creator->id;
 
         DB::table('round_user')->insertOrIgnore([
             ['user_id' => 101, 'round_id' => $round->id],
@@ -97,7 +99,7 @@ class CreateAndReadyCompetitors extends Command
         $round->updateStatus();
 
         if (is_null($userId)) {
-            return;
+            $userId = $competition->creator->id;
         }
 
         $insertedIds = DB::table('tracks')

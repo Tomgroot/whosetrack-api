@@ -163,7 +163,10 @@ class Round extends Model {
             $scores[] = [
                 'position' => 0,
                 'score' => 0,
+                'user' => $user,
+                /** deprecated: TODO remove after update */
                 'user_id' => $user->id,
+                /** deprecated: TODO remove after update */
                 'nickname' => $user->nickname
             ];
         }
