@@ -13,7 +13,7 @@ class CreateAndReadyCompetitors extends Command
      *
      * @var string
      */
-    protected $signature = 'create-and-ready-competitors {joinCode} {userId?}';
+    protected $signature = 'create-and-ready-competitors {joinCode?} {userId?}';
 
     /**
      * The console command description.
@@ -34,7 +34,11 @@ class CreateAndReadyCompetitors extends Command
             ['id' => 104, 'nickname' => 'Freek', 'image_url' => null, 'spotify_guid' => null],
         ]);
 
-        $competition = Competition::where('join_code', $this->argument('joinCode'))->first();
+        if (!is_null($this->argument('joinCode'))) {
+            $competition = Competition::where('join_code', $this->argument('joinCode'))->first();
+        } else {
+            $competition = Competition::orderBy('created_at', 'desc')->first();
+        }
 
         if (!$competition) {
             throw new \Exception('Competition not found');

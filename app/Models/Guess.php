@@ -30,7 +30,9 @@ class Guess extends Model {
     ];
 
     public $appends = [
+        /** deprecated use guessedNickname */
         'nickname',
+        'guessed_nickname',
     ];
 
     public static function rules($id) {
@@ -49,7 +51,14 @@ class Guess extends Model {
         return $this->belongsTo(User::class, 'guessed_user_id');
     }
 
+    /**
+     * deprecated: use guessedNickname instead TODO: remove
+     */
     public function getNicknameAttribute() {
+        return $this->guessedUser()->first()->nickname;
+    }
+
+    public function getGuessedNicknameAttribute() {
         return $this->guessedUser()->first()->nickname;
     }
 }
