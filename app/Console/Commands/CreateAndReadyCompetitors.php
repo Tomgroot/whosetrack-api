@@ -100,8 +100,6 @@ class CreateAndReadyCompetitors extends Command
 
         $count = DB::table('tracks')->insertOrIgnore($tracks);
 
-        $round->updateStatus();
-
         if (is_null($userId)) {
             $userId = $competition->creator->id;
         }

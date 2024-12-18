@@ -38,6 +38,10 @@ class Competition extends Model {
         return [];
     }
 
+    public function isDemo() {
+        return $this->id === config('demo_constants.demo_competition_id');
+    }
+
     public function creator() {
         return $this->belongsTo(User::class, 'created_by');
     }
