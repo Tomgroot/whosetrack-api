@@ -68,82 +68,9 @@ class Round extends Model {
         return $this->id === config('demo_constants.demo_round_id_1') || $this->id === config('demo_constants.demo_round_id_2');
     }
 
-    public function handleDemoGuessWhose() {
-        if (!$this->isDemo()) {
-            return;
-        }
-
-        $dummy_demo_users = $this->users->where('id', '!=', config('demo_constants.demo_user_id'));
-        $demo_user_track = $this->tracks->where('user_id', config('demo_constants.demo_user_id'))->first();
-
-        foreach($dummy_demo_users as $guess_user){
-            Guess::create([
-                'user_id' => $guess_user->id,
-                'track_id' => $demo_user_track->id,
-                'guessed_user_id' => $guess_user->id,
-                'ready' => true,
-            ]);
-        }
-    }
-
-    public function handleDemoFinished() {
-        if (!$this->isDemo()) {
-            return;
-        }
-
-        $newRoundId = ($this->id === config('demo_constants.demo_round_id_1')) ? config('demo_constants.demo_round_id_2') : config('demo_constants.demo_round_id_1');
-        $cycle_round = Round::find($newRoundId);
-
-        // Remove demo user track and guesses so round can be played again.
-        $demo_user_1_track = $cycle_round->tracks->where('user_id', config('demo_constants.demo_user_id'))->first();
-        $demo_user_1_track->delete();
-        $other_user_tracks = $cycle_round->tracks->where('user_id', '!=', config('demo_constants.demo_user_id'));
-        foreach($other_user_tracks as $track){
-            $demo_user_1_guess = $track->guesses->where('user_id', config('demo_constants.demo_user_id'))->first();
-            $demo_user_1_guess->delete();
-        }
-
-        $cycle_round->reset();
-
-        // Update creation times to put `most_recent_round` correctly. Done via SQL since eloquent doesn't handle creation time
-        DB::table('rounds')->where('id', $cycle_round->id)->update(['created_at' => date('Y-m-d H:i:s', time())]);
-        DB::table('rounds')->where('id', $this->id)->update(['created_at' => date('Y-m-d H:i:s', time() - 1000000)]);
-    }
-
     public function reset() {
         $this->status = self::STATUS_JOINING;
         $this->currently_playing_track = 0;
-        $this->save();
-    }
-
-    public function updateStatus() {
-        if ($this->status === self::STATUS_JOINING){
-            return;
-        }
-
-        $this->load('tracks');
-
-        // Users should not start guessing when they are alone or with 2 in the competition.
-        if ($this->tracks()->count() <= 2 || $this->tracks()->pluck('ready')->contains(0)) {
-            return;
-        }
-
-        if ($this->status == self::STATUS_PICK_TRACK){
-            $this->status = self::STATUS_GUESS_WHOSE;
-            $this->handleDemoGuessWhose();
-
-        } elseif ($this->status == self::STATUS_GUESS_WHOSE){
-            $nr_users = $this->users->count();
-            foreach($this->tracks as $track){
-                if($track->guesses()->count() < $nr_users || $track->guesses()->pluck('ready')->contains(0)){
-                    return;
-                }
-            }
-            $this->currently_playing_track = 0;
-            $this->status = self::STATUS_FINISHED;
-            $this->handleDemoFinished();
-        }
-
         $this->save();
     }
 

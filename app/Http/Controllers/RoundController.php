@@ -19,7 +19,6 @@ class RoundController extends Controller {
     public function store(Request $request): JsonResponse {
         $competition_id = $request->route('competition_id') ?? $request->get('competition_id');
         $user_id = $request->get('user_id');
-        $gamemode = $request->get('gamemode');
 
         if (is_null($user = User::find($user_id))) {
             return response()->json(['error' => 'User not found'], 404);
@@ -35,6 +34,12 @@ class RoundController extends Controller {
             return response()->json($validator->errors(), 422);
         }
 
+        if ($competition->isDemo()) {
+            $round = $competition->mostRecentRound();
+            $round->reset();
+            return response()->json($round, 201);
+        }
+
         $round = Round::create([
             'competition_id' => $competition->id,
             'status' => 'joining',
@@ -48,6 +53,16 @@ class RoundController extends Controller {
         $round->load(['users', 'tracks']);
 
         return response()->json($round, 201);
+    }
+
+    public function update(Request $request, $id): JsonResponse {
+        if ($request->get('start') && !is_null($round = Round::findOrFail($id))) {
+            $round->status = Round::STATUS_PICK_TRACK;
+            $round->save();
+            return response()->json($round);
+        }
+
+        return parent::update($request, $id);
     }
 
     public function leaveRound($round_id, $user_id): JsonResponse {
@@ -77,21 +92,7 @@ class RoundController extends Controller {
         return response()->json($round->results());
     }
 
-    public function updateRoundStatus(Request $request): JsonResponse{
-
-        $round = Round::findOrFail($request->route('round_id'));
-
-        if($round->status === Round::STATUS_JOINING){
-            $round->status = Round::STATUS_PICK_TRACK;
-            $round->save();
-        } else {
-            $round->updateStatus();
-        }
-
-        return response()->json($round);
-    }
-
-    public function readyGuesses(Request $request): JsonResponse{
+    public function readyGuesses(Request $request): JsonResponse {
         // TODO: unsafe usage of user id, everybody can edit each others readiness
         $validated = $request->validate([
             'user_id' => 'required|integer|exists:users,id',
@@ -101,12 +102,9 @@ class RoundController extends Controller {
 
         DB::table('guesses')
             ->join('tracks', 'guesses.track_id', '=', 'tracks.id')
-            ->join('rounds', 'tracks.round_id', '=', 'rounds.id')
-            ->where('rounds.id', $round->id)
+            ->where('round_id', $round->id)
             ->where('guesses.user_id', $validated['user_id'])
             ->update(['guesses.ready' => true]);
-
-        $round->updateStatus();
 
         return response()->json($round);
     }

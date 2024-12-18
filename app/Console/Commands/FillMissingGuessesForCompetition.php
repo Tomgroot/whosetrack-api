@@ -59,7 +59,5 @@ class FillMissingGuessesForCompetition extends Command
                 ]);
             }
         }
-
-        $round->updateStatus();
     }
 }
