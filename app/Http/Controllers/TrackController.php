@@ -20,8 +20,6 @@ class TrackController extends Controller {
         $validated = $request->validate($rules);
 
         $track->update($validated);
-        $track->round->updateStatus();
-
         return response()->json($track);
     }
 
@@ -52,7 +50,6 @@ class TrackController extends Controller {
 
         $track = Track::create($data);
 
-        $track->round->updateStatus();
         $track->guesses = [];
 
         return response()->json($track, 201);
@@ -64,8 +61,6 @@ class TrackController extends Controller {
 
         // TODO: make sure validation rules accept empty spotify url and add validation here
         $track->update(["ready" => $request->ready]);
-
-        $track->round->updateStatus();
 
         return response()->json($track);
     }
