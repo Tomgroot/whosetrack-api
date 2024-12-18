@@ -117,34 +117,6 @@ class Round extends Model {
     }
 
     public function updateStatus() {
-        if ($this->status === self::STATUS_JOINING){
-            return;
-        }
-
-        $this->load('tracks');
-
-        // Users should not start guessing when they are alone or with 2 in the competition.
-        if ($this->tracks()->count() <= 2 || $this->tracks()->pluck('ready')->contains(0)) {
-            return;
-        }
-
-        if ($this->status == self::STATUS_PICK_TRACK){
-            $this->status = self::STATUS_GUESS_WHOSE;
-            $this->handleDemoGuessWhose();
-
-        } elseif ($this->status == self::STATUS_GUESS_WHOSE){
-            $nr_users = $this->users->count();
-            foreach($this->tracks as $track){
-                if($track->guesses()->count() < $nr_users || $track->guesses()->pluck('ready')->contains(0)){
-                    return;
-                }
-            }
-            $this->currently_playing_track = 0;
-            $this->status = self::STATUS_FINISHED;
-            $this->handleDemoFinished();
-        }
-
-        $this->save();
     }
 
     public function getResultsAttribute() {

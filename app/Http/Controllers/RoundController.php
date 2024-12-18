@@ -101,8 +101,7 @@ class RoundController extends Controller {
 
         DB::table('guesses')
             ->join('tracks', 'guesses.track_id', '=', 'tracks.id')
-            ->join('rounds', 'tracks.round_id', '=', 'rounds.id')
-            ->where('rounds.id', $round->id)
+            ->where('round_id', $round->id)
             ->where('guesses.user_id', $validated['user_id'])
             ->update(['guesses.ready' => true]);
 
