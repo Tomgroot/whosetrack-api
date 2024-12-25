@@ -1,8 +1,6 @@
 on:
   push:
     branches: [ main ]
-    paths-ignore:
-      - 'composer.json'
 name: Deploy API to production
 jobs:
   web-deploy:
@@ -13,8 +11,6 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Run Migrations
-        run: ssh -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ~/domains/whosetrack.nl/ && php artisan migrate --force"
       - name: Get latest code
         uses: actions/checkout@v3
       - name: Composer install
@@ -34,3 +30,5 @@ jobs:
           server: ${{ secrets.SERVER }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
+      - name: Run Migrations
+        run: ssh -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} "cd ~/domains/whosetrack.nl/ && php artisan migrate --force"
