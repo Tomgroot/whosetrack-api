@@ -15,6 +15,10 @@ class Track extends Model {
         'ready',
     ];
 
+    protected $hidden = [
+        'user',
+    ];
+
     public static $rules = [
         'user_id' => 'required|integer|exists:users,id',
         'round_id' => 'required|integer|exists:rounds,id',
@@ -41,13 +45,8 @@ class Track extends Model {
 
     public $with = [
         'guesses',
+        'user',
     ];
-
-    public function getMissingGuessUsersAttribute() {
-        $guessUserIds = $this->guesses->pluck('user_id')->unique();
-
-        return $this->round()->first()->users->whereNotIn('id', $guessUserIds);
-    }
 
     public function round() {
         return $this->belongsTo(Round::class);
@@ -62,7 +61,7 @@ class Track extends Model {
     }
 
     public function getNicknameAttribute() {
-        $user = $this->user()->first();
+        $user = $this->user;
         return !is_null($user) ? $user->nickname : null;
     }
 }
