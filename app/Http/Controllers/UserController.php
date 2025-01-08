@@ -16,7 +16,7 @@ class UserController extends Controller {
         $validated = $request->validate(User::$rules);
 
         if ($request->get('nickname') == config('demo_constants.demo_user_name')) {
-            $user = User::find(config('demo_constants.demo_user_id'));
+            $user = User::find(config('demo_constants.demo_user_id_1'));
         } else {
             $user = User::create($validated);
         }
