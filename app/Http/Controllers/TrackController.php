@@ -55,17 +55,6 @@ class TrackController extends Controller {
         return response()->json($track, 201);
     }
 
-    public function update(Request $request, $id): JsonResponse {
-        $track = Track::findOrFail($id);
-        $rules = Track::rules($id);
-        $validated = $request->validate($rules);
-
-        $track->update($validated);
-        $track->round->updateStatus();
-        
-        return response()->json($track);
-    }
-
     public function updateByRound(Request $request): JsonResponse {
         $round = Round::findOrFail($request->route('round_id'));
         $track = $round->tracks()->where('user_id', $request->user_id)->first();
