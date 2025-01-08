@@ -39,7 +39,6 @@ class FillMissingGuessesForCompetition extends Command
         }
 
         // all users should have posted a guess to all tracks
-
         $round = $competition->mostRecentRound();
 
         $tracks = $round->tracks;

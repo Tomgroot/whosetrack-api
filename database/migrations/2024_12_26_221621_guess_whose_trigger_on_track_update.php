@@ -55,7 +55,8 @@ return new class extends Migration
     public function down(): void
     {
         DB::unprepared(<<<EO
-            DROP TRIGGER IF EXISTS round_to_guess_whose_when_tracks_submitted;
+            DROP TRIGGER IF EXISTS round_to_guess_whose_when_tracks_submitted_insert;
+            DROP TRIGGER IF EXISTS round_to_guess_whose_when_tracks_submitted_update;
         EO);
     }
 };

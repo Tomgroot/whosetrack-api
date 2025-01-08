@@ -15,9 +15,8 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 IF NEW.status = 'pick_track' AND OLD.status != 'pick_track' AND (NEW.id = 1 OR NEW.id = 2) THEN
-                    DELETE FROM guesses WHERE track_id IN (SELECT t.id FROM tracks t WHERE t.round_id = NEW.id AND t.user_id = 1);
-                    DELETE FROM guesses WHERE user_id = 1 AND track_id IN (SELECT t.id FROM tracks t WHERE t.round_id = NEW.id);
-                    DELETE FROM tracks WHERE round_id = NEW.id AND user_id = 1;
+                    DELETE FROM guesses WHERE track_id IN (SELECT t.id FROM tracks t WHERE t.round_id = NEW.id);
+                    DELETE FROM tracks WHERE round_id = NEW.id AND user_id NOT IN (2, 3);
                 END IF;
             END
         EO);
