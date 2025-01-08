@@ -28,7 +28,10 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
     public static $rules = [
         'nickname' => 'required|string',

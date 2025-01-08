@@ -34,6 +34,7 @@ class GuessController extends Controller {
         if(!is_null($guess)){
             $guess->guessed_user_id = $request->get('guessed_user_id');
             $guess->save();
+            $guess->load(['guessedUser']);
             return response()->json($guess, 201);
         }
 
@@ -43,6 +44,8 @@ class GuessController extends Controller {
             'guessed_user_id' => $request->get('guessed_user_id'),
             'ready' => false
         ]);
+        
+        $guess->load(['user', 'guessedUser']);
 
         return response()->json($guess, 201);
     }

@@ -23,7 +23,8 @@ class Guess extends Model {
     ];
 
     protected $hidden = [
-        'guessedUser',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [
@@ -33,13 +34,8 @@ class Guess extends Model {
         'ready' => 'boolean',
     ];
 
-    public $appends = [
-        /** deprecated use guessedNickname */
-        'nickname',
-        'guessed_nickname',
-    ];
-
     protected $with = [
+        'user',
         'guessedUser',
     ];
 
@@ -57,16 +53,5 @@ class Guess extends Model {
 
     public function guessedUser() {
         return $this->belongsTo(User::class, 'guessed_user_id');
-    }
-
-    /**
-     * deprecated: use guessedNickname instead TODO: remove
-     */
-    public function getNicknameAttribute() {
-        return $this->guessedUser->nickname;
-    }
-
-    public function getGuessedNicknameAttribute() {
-        return $this->guessedUser->nickname;
     }
 }
