@@ -54,6 +54,6 @@ class User extends Authenticatable
     }
 
     public function isDemo() {
-        return $this->id === config('demo_constants.demo_user_id');
+        return $this->id === config('demo_constants.demo_user_id_1');
     }
 }

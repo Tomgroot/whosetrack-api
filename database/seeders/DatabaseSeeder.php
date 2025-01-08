@@ -20,15 +20,17 @@ class DatabaseSeeder extends Seeder
     {
 
         $user_1 = User::create([
-            'id' => config('demo_constants.demo_user_id'),
+            'id' => config('demo_constants.demo_user_id_1'),
             'nickname' => config('demo_constants.demo_user_name'),
         ]);
 
         $user_2 = User::create([
+            'id' => config('demo_constants.demo_user_id_2'),
             'nickname' => 'Demo user 2',
         ]);
 
         $user_3 = User::create([
+            'id' => config('demo_constants.demo_user_id_3'),
             'nickname' => 'Demo user 3',
         ]);
 
