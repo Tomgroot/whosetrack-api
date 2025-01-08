@@ -23,11 +23,11 @@ class DatabaseSeeder extends Seeder
             'id' => config('demo_constants.demo_user_id'),
             'nickname' => config('demo_constants.demo_user_name'),
         ]);
-        
+
         $user_2 = User::create([
             'nickname' => 'Demo user 2',
         ]);
-        
+
         $user_3 = User::create([
             'nickname' => 'Demo user 3',
         ]);
@@ -43,12 +43,12 @@ class DatabaseSeeder extends Seeder
         $demo_competition->users()->attach($user_1);
         $demo_competition->users()->attach($user_2);
         $demo_competition->users()->attach($user_3);
-        
+
         $track_urls = [
             'https://open.spotify.com/track/6lKaiRbX5DtGMGNvE4xRbx?si=56ff71c45dbc40cb',
             'https://open.spotify.com/track/1V6ecjVT6IgPBiAtNyDWhh?si=e9627d25b78044e6',
             'https://open.spotify.com/track/4kZ9yt773M4ybgQsQQzaVH?si=86b140e6902041fe'
-        ];        
+        ];
 
         $cycle_round = Round::create([
             'id' => config('demo_constants.demo_round_id_1'),
@@ -61,24 +61,14 @@ class DatabaseSeeder extends Seeder
         $cycle_round->users()->attach($user_1);
         $cycle_round->users()->attach($user_2);
         $cycle_round->users()->attach($user_3);
-        
-        foreach([$user_1, $user_2, $user_3] as $key => $demo_user){
-            $track = Track::create([
+
+        foreach([$user_2, $user_3] as $key => $demo_user){
+            Track::create([
                 'user_id' => $demo_user->id,
                 'round_id' => $cycle_round->id,
                 'ready' => true,
                 'spotify_url' => $track_urls[$key]
             ]);
-
-            foreach([$user_1, $user_2, $user_3] as $guess_user){
-                $guess = Guess::create([
-                    'user_id' => $guess_user->id,
-                    'track_id' => $track->id,
-                    'guessed_user_id' => $demo_user->id,
-                    'ready' => true,
-                ]);
-            }
-            
         }
 
         DB::table('rounds')->where('id', $cycle_round->id)->update(['created_at' => date('Y-m-d H:i:s', time() - 1000000)]);
@@ -96,22 +86,12 @@ class DatabaseSeeder extends Seeder
         $round->users()->attach($user_3);
 
         foreach([$user_2, $user_3] as $key => $demo_user){
-            $track = Track::create([
+            Track::create([
                 'user_id' => $demo_user->id,
                 'round_id' => $round->id,
                 'ready' => true,
                 'spotify_url' => $track_urls[$key]
             ]);
-
-            foreach([$user_2, $user_3] as $guess_user){
-                $guess = Guess::create([
-                    'user_id' => $guess_user->id,
-                    'track_id' => $track->id,
-                    'guessed_user_id' => $demo_user->id,
-                    'ready' => true,
-                ]);
-            }
-            
         }
     }
 }
