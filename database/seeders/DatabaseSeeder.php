@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
         $round = Round::create([
             'id' => config('demo_constants.demo_round_id_2'),
             'competition_id' => $demo_competition->id,
-            'status' => 'pick_track',
+            'status' => 'joining',
             'created_by' => $user_1->id,
             'currently_playing_track' => 0,
         ]);
