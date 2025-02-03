@@ -53,6 +53,9 @@ class CompetitionController extends Controller {
             $demoCompetition = $this->show(config('demo_constants.demo_competition_id'));
             $round = $demoCompetition->mostRecentRound();
             $round->status = 'joining';
+            if($request->get('gamemode')){
+                $round->gamemode = $request->get('gamemode');
+            }
             $round->save();
             return response()->json($demoCompetition, 201);
         }
