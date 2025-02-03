@@ -22,6 +22,11 @@ class Guess extends Model {
         'ready',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     protected $casts = [
         'user_id' => 'integer',
         'track_id' => 'integer',
@@ -29,10 +34,9 @@ class Guess extends Model {
         'ready' => 'boolean',
     ];
 
-    public $appends = [
-        /** deprecated use guessedNickname */
-        'nickname',
-        'guessed_nickname',
+    protected $with = [
+        'user',
+        'guessedUser',
     ];
 
     public static function rules($id) {
@@ -49,16 +53,5 @@ class Guess extends Model {
 
     public function guessedUser() {
         return $this->belongsTo(User::class, 'guessed_user_id');
-    }
-
-    /**
-     * deprecated: use guessedNickname instead TODO: remove
-     */
-    public function getNicknameAttribute() {
-        return $this->guessedUser()->first()->nickname;
-    }
-
-    public function getGuessedNicknameAttribute() {
-        return $this->guessedUser()->first()->nickname;
     }
 }

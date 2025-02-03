@@ -13,14 +13,14 @@ class CreateAndReadyCompetitors extends Command
      *
      * @var string
      */
-    protected $signature = 'create-and-ready-competitors {joinCode?} {userId?}';
+    protected $signature = 'create-and-join-competitors {joinCode?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Creates users, join the specific competition, submit a track and ready up.';
+    protected $description = 'Creates users and join the specific competition';
 
     /**
      * Execute the console command.
@@ -61,87 +61,5 @@ class CreateAndReadyCompetitors extends Command
             ['user_id' => 103, 'round_id' => $round->id],
             ['user_id' => 104, 'round_id' => $round->id],
         ]);
-
-        $tracks = [
-            [
-                'user_id' => 101,
-                'round_id' => $round->id,
-                'ready' => true,
-                'spotify_url' => 'https://open.spotify.com/track/6lKaiRbX5DtGMGNvE4xRbx?si=56ff71c45dbc40cb'
-            ],
-            [
-                'user_id' => 102,
-                'round_id' => $round->id,
-                'ready' => true,
-                'spotify_url' => 'https://open.spotify.com/track/1V6ecjVT6IgPBiAtNyDWhh?si=e9627d25b78044e6'
-            ],
-            [
-                'user_id' => 103,
-                'round_id' => $round->id,
-                'ready' => true,
-                'spotify_url' => 'https://open.spotify.com/track/4YEsNhGhXXtefznetrzhMb?si=62052ba2c97048ac'
-            ],
-            [
-                'user_id' => 104,
-                'round_id' => $round->id,
-                'ready' => true,
-                'spotify_url' => 'https://open.spotify.com/track/46HNZY1i7O6jwTA7Slo2PI?si=dd25fb86c9f6411e'
-            ]
-        ];
-
-        if (!is_null($userId = $this->argument('userId'))) {
-            $tracks[] = [
-                'user_id' => $userId,
-                'round_id' => $round->id,
-                'ready' => true,
-                'spotify_url' => 'https://open.spotify.com/track/44qWZU2uA8T5JHGPvk1lUs?si=81813ff140334bc3'
-            ];
-        }
-
-        $count = DB::table('tracks')->insertOrIgnore($tracks);
-
-        if (is_null($userId)) {
-            $userId = $competition->creator->id;
-        }
-
-        $insertedIds = DB::table('tracks')
-            ->orderBy('id', 'desc')
-            ->take(5)
-            ->pluck('id');
-
-        $guesses = [
-            [
-                'track_id' => $insertedIds[0],
-                'guessed_user_id' => 101,
-                'ready' => true,
-            ],
-            [
-                'track_id' => $insertedIds[1],
-                'guessed_user_id' => 102,
-                'ready' => true,
-            ],
-            [
-                'track_id' => $insertedIds[2],
-                'guessed_user_id' => 103,
-                'ready' => true,
-            ],
-            [
-                'track_id' => $insertedIds[3],
-                'guessed_user_id' => 104,
-                'ready' => true,
-            ],
-            [
-                'track_id' => $insertedIds[4],
-                'guessed_user_id' => $userId,
-                'ready' => true,
-            ]
-        ];
-
-        foreach ([101, 102, 103, 104] as $id) {
-            foreach ($guesses as $guess) {
-                $guess['user_id'] = $id;
-                DB::table('guesses')->insertOrIgnore($guess);
-            }
-        }
     }
 }

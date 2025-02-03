@@ -1,8 +1,6 @@
 on:
   push:
     branches: [ main ]
-    paths-ignore:
-      - 'composer.json'
 name: Deploy API to production
 jobs:
   web-deploy:

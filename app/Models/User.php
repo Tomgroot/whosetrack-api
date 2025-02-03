@@ -28,7 +28,10 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
     public static $rules = [
         'nickname' => 'required|string',
@@ -51,6 +54,6 @@ class User extends Authenticatable
     }
 
     public function isDemo() {
-        return $this->id === config('demo_constants.demo_user_id');
+        return $this->id === config('demo_constants.demo_user_id_1');
     }
 }

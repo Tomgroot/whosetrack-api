@@ -100,6 +100,10 @@ class Round extends Model {
 
         foreach($this->tracks as $track){
             foreach($track->guesses->sortBy('user_id')->values() as $index => $guess){
+                if (!$users->contains('id', $guess->user_id)) {
+                    continue;
+                }
+
                 $extra = (int)($guess->guessed_user_id === $track->user_id || $guess->user_id === $track->user_id);
                 $scores[$index]['score'] += $extra;
             }
