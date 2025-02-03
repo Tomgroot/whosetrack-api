@@ -37,6 +37,7 @@ class RoundController extends Controller {
         if ($competition->isDemo()) {
             $round = $competition->mostRecentRound();
             $round->reset();
+            $round->update(['gamemode', $request->get('gamemode')]);
             return response()->json($round, 201);
         }
 
